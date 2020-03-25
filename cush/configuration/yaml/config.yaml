@@ -1,0 +1,39 @@
+#- TODO: what to do with this...
+---
+aws:
+  ec2:
+    regions:
+      - us-east-1
+      - us-west-1
+      - us-west-2
+      - eu-west-1
+      - eu-central-1
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-northeast-1
+      - sa-east-1
+
+  vpc:
+    regions:
+      - us-east-1
+      - us-west-1
+      - us-west-2
+      - eu-west-1
+      - eu-central-1
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-northeast-1
+      - sa-east-1
+
+  elb:
+    regions:
+      - us-east-1
+      - us-west-2
+      - us-west-1
+      - eu-west-1
+      - eu-central-1
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-northeast-1
+      - sa-east-1
+...

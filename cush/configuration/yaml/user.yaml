@@ -1,0 +1,11 @@
+---
+aws:
+    credential_name_1:
+        access_key_id: AKIAXXXXXXXXXXXXXXXX_2
+        secret_access_key: XxXx_AWS_SECRET_ACCESS_KEY_1_xXxX
+
+
+    credential_name_2p:
+        access_key_id: AKIAXXXXXXXXXXXXXXXX_2
+        secret_access_key: XxXx_AWS_SECRET_ACCESS_KEY_2_xXxX
+...

@@ -1,0 +1,48 @@
+version: 1
+
+loggers:
+    cush:
+        level: DEBUG
+        handlers: [CushConsole]
+
+    thewired:
+        level: INFO
+        handlers: [TheWiredConsole]
+
+    kaleidoscope:
+        level: INFO
+        handlers: [KaleidoscopeConsole]
+
+
+formatters:
+    CushColorFormatter:
+        (): colorlog.ColorFormatter
+        fmt: "%(color0)s%(levelname)s:%(color_reset)s%(color1)s %(name)s.%(name_ext)s: %(color_reset)s%(color2)s%(message)s%(color_reset)s"
+        colormap: ext://cush.configuration.cush_log_color_map
+    TheWiredColorFormatter:
+        (): colorlog.ColorFormatter
+        fmt: "%(color0)s%(levelname)s:%(color_reset)s%(color1)s %(name)s.%(name_ext)s: %(color_reset)s%(color2)s%(message)s%(color_reset)s"
+        colormap: ext://cush.configuration.thewired_log_color_map
+    KaleidoscopeColorFormatter:
+        (): colorlog.ColorFormatter
+        fmt: "%(color0)s%(levelname)s:%(color_reset)s%(color1)s %(name)s.%(name_ext)s: %(color_reset)s%(color2)s%(message)s%(color_reset)s"
+        colormap: ext://cush.configuration.kaleidoscope_log_color_map
+
+handlers:
+    CushConsole:
+        class: logging.StreamHandler
+        formatter: CushColorFormatter
+        level: DEBUG
+        stream: ext://sys.stderr
+    TheWiredConsole:
+        class: logging.StreamHandler
+        formatter: TheWiredColorFormatter
+        level: DEBUG
+        stream: ext://sys.stderr
+    KaleidoscopeConsole:
+        class: logging.StreamHandler
+        formatter: KaleidoscopeColorFormatter
+        level: DEBUG
+        stream: ext://sys.stderr
+#
+#filters:

@@ -1,0 +1,90 @@
+---
+aws:
+    ec2:
+        instances:
+            __call__ :
+                provider: boto3.aws.ec2.instances.get
+            new:
+              __call__:
+                provider: boto3.aws.ec2.instances.create
+
+        security_groups:
+            __call__:
+                provider: boto3.aws.ec2.security_groups.get
+
+        old_sgs:
+            __call__:
+                provider: boto.aws.ec2.security_groups.get
+
+        volumes:
+            __call__:
+                provider: boto3.aws.ec2.volumes.get
+        
+        snapshots:
+            __call__:
+                provider: boto3.aws.ec2.snapshots.get
+                   
+         
+         
+         
+        keys:
+            __call__:
+                provider: boto3.aws.ec2.keypairs.get
+
+        enis:
+            __call__:
+                provider: boto3.aws.ec2.interfaces.get
+        
+        #images:
+        #    __call__:
+        #        provider:
+        #            implementor: boto3.aws.ec2.resource
+        #            AddendumFormatter:
+        #                addendum: .images.all()
+        #                formatter: list
+
+
+
+        vpc:
+          __call__:
+              provider: boto3.aws.ec2.vpc.get
+    #
+    #    security_groups:
+    #        __call__:
+    #            provider: DirectAccess
+    #                implementor: Unimplemented
+
+                    
+        elb:
+            instances:
+                __call__:
+                    provider: boto.aws.ec2.elbs.get
+
+    #rds:
+    #    instances:
+    #        __call__:
+    #            provider:
+    #                implementor: boto3.aws.rds.client
+    #                AddendumFormatter:
+    #                    addendum: .describe_db_clusters()
+    #                    formatter:
+    #                        DictToObj:
+    #                            InputDictFormat: aws.rds.instances
+    #
+    #    security_groups:
+    #        __call__:
+    #            provider:
+    #                implementor: boto3.aws.rds.client
+    #                AddendumFormatter:
+    #                    addendum: .describe_db_security_groups()
+    #                    formatter:
+    #                        JSONSerializer:
+    #                            request: aws.rds.security_groups
+
+
+    s3:
+        buckets:
+            __call__:
+                provider: boto3.aws.s3.buckets.get
+
+...

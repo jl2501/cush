@@ -1,0 +1,25 @@
+boto3:
+    aws:
+        ec2:
+            instances:
+                create:
+                    __params__:
+                        defaults:
+                            method_name: create_instances
+                            SecurityGroupIds: nsid://default.aws.security_groups
+                            InstanceType: nsid://default.aws.instances.type
+                            MaxCount: nsid://default.aws.instances.launch_number
+                            MinCount: nsid://default.aws.instances.launch_number
+                            ImageId: nsid://default.aws.amis.ubuntu.hvm.ebs.zesty
+                            KeyName: laptop
+
+                        ubuntu.zesty:
+                            ImageId: nsid://default.aws.amis.ubuntu.hvm.ebs.zesty
+
+                        ubuntu.artful:
+                            ImageId: nsid://default.aws.amis.ubuntu.hvm.ebs.artful
+
+                        two_zesty:
+                            ImageId: nsid://default.aws.amis.ubuntu.hvm.ebs.zesty
+                            MinCount: 2
+                            MaxCount: 2

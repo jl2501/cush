@@ -1,0 +1,26 @@
+aws:
+    amis:
+        ubuntu:
+            hvm:
+                ebs:
+                    zesty:
+                        __raw__:
+                            us_west_1: 'ami-e1131781'
+                            us_west_2: 'ami-32e7464a'
+                            eu_central_1: 'ami-daba31b5'
+
+                    artful:
+                        __raw__:
+                            us_west_1: 'ami-d53b3eb5'
+                            us_west_2: 'ami-a163c7d9'
+                            eu_central_1: 'ami-5039b03f'
+
+    security_groups:
+        __raw__:
+            us_west_1: [sg-a6ec80c0]
+            us_west_2: [sg-4908b834]
+            eu_central_1: [sg-9f73bff5]
+
+    instances:
+        type: t2.nano
+        launch_number: 1
