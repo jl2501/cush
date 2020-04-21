@@ -8,6 +8,9 @@ authors = ["James Light <j.gareth.light@gmail.com>"]
 python = "^3.8"
 kaleidoscope = {path = "../kaleidoscope"}
 thewired = {path = "../thewired"}
+colorlog = {path = "../colorlog"}
+boto3 = "^1.12.42"
+boto = "^2.49.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
