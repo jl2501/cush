@@ -1,11 +1,12 @@
-import collections
-import cush.defaults as defaults
+from collections.abc import Mapping
+from logging import getLogger, LoggerAdapter
+
 import thewired
 from thewired import NamespaceNode
 from thewired import NamespaceConfigParser
 
-import logging
-from logging import getLogger, LoggerAdapter
+import cush.defaults as defaults
+
 
 logger = getLogger(__name__)
 
@@ -53,7 +54,7 @@ class SdkConfigParser(NamespaceConfigParser):
         for key in mapping.keys():
             log.debug('----[cur_ns: {} | current key: {}'.format(cur_ns, key))
 
-            if isinstance(mapping[key], collections.Mapping):
+            if isinstance(mapping[key], Mapping):
                 log.debug('mapping[{}] is another mapping'.format(key))
 
                 if 'provider' in mapping[key].keys():

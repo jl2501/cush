@@ -2,16 +2,19 @@ from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
 
 import math
-from abc import abstractmethod
-from .load import get_implementor_app_name
 import operator
 import collections
-from cush import get_cush
 import inspect
-from .flipswitch import Flipswitch
-import re
 import itertools
+import re
+from abc import abstractmethod
+from collections.abc import Iterable
+from .load import get_implementor_app_name
+
 from thewired.exceptions import NamespaceLookupError
+
+from cush import get_cush
+from .flipswitch import Flipswitch
 
 
 class SimpleWrap(object):
@@ -533,14 +536,14 @@ class ImplementorProvisioner(object):
             return
 
         if isinstance(children, str) or\
-            not isinstance(children, collections.Iterable):
+            not isinstance(children, Iterable):
             children = [children]
 
         if isinstance(parent, str):
             #- treat as an existing NSID
             parent = self.cush.flipswitch._lookup(parent)
 
-        if not isinstance(parent, collections.Iterable):
+        if not isinstance(parent, Iterable):
             parents = [parent]
         else:
             parents = parent

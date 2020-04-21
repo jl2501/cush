@@ -1,8 +1,8 @@
 from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
 
-import collections
 import operator
+from collections.abc import Mapping
 
 from thewired import NamespaceConfigParser
 
@@ -57,7 +57,7 @@ class ProviderConfigParser(NamespaceConfigParser):
         for key in mapping.keys():
             log.debug('----[cur_ns: {} | current key: {}'.format(cur_ns, key))
 
-            if isinstance(mapping[key], collections.Mapping):
+            if isinstance(mapping[key], Mapping):
                 log.debug('mapping[{}] is another mapping'.format(key))
 
                 next_keys = list(mapping[key].keys())
