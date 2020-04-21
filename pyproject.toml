@@ -5,7 +5,9 @@ description = ""
 authors = ["James Light <j.gareth.light@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.8"
+kaleidoscope = {path = "../kaleidoscope"}
+thewired = {path = "../thewired"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
