@@ -9,7 +9,7 @@ information
 #                                                                                        #
 ##########################################################################################
 
-config_dir = "~/.cush"
+config_dir = "~/.config/cush"
 user_file = "user.yaml"
 sdk_ns_file = "sdk_ns.yaml"
 runtime_config_file = "config.yaml"
