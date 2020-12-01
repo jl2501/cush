@@ -26,6 +26,8 @@ class CushApplication(object):
         Container for the application state
     """
     #- app_name -> application instance mapping
+    #- allows us to have multiple CushApplication objects at once
+    #- each one will have its own setup if needed
     nsroot = NamespaceNode(namespace_id='.')
     nsroot._add_child('applications')
     _applications = dict()
@@ -36,7 +38,7 @@ class CushApplication(object):
         Description:
             get a named application object from the class' list of instances by name
         """
-        log = LoggerAdapter(logger, {'name_prefix' : 'CushApplication.get_application'})
+        log = LoggerAdapter(logger, dict(name_prefix='CushApplication.get_application'))
         try:
             app = cls._applications[name]
         except KeyError:
@@ -48,10 +50,11 @@ class CushApplication(object):
 
 
     def __new__(cls, name='default'):
-        log = LoggerAdapter(logger, {'name_ext' : 'CushApplication.__new__'})
+        log = LoggerAdapter(logger, dict(name_ext='CushApplication.__new__'))
         try:
             app = cls._applications[name]
             log.debug("Found existing application named: {}".format(name))
+
         except (KeyError, NamespaceLookupError):
             log.debug("Creating new application object named: {}".format(name))
             app = super().__new__(cls)
@@ -65,8 +68,9 @@ class CushApplication(object):
         Input:
             name: application object name
         """
-        log = LoggerAdapter(logger, {'name_ext' : 'CushApplication.__init__'})
+        log = LoggerAdapter(logger, dict(name_ext='CushApplication.__init__'))
         log.debug("Entering")
+
         #- add self to the class level named list of application object instances
         if name in self._applications.keys():
             #- do not reinitialize existing application object
