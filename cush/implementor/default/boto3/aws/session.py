@@ -27,7 +27,7 @@ class AwsSessionProvisioner(ImplementorProvisioner):
 
         #- create the implementors for each user credential
         for cred_nsid, cred_x in creds:
-            log.debug("Using credential: {}".format(cred_x))
+            log.debug(f"Using credential: {cred_nsid}:{cred_x}")
 
             #- create implementors for each region
             for region_x in region_imps:

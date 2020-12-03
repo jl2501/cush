@@ -1,6 +1,6 @@
 import cush.defaults as defaults
 #from cush import get_cush
-from thewired import NamespaceConfigParser
+from thewired import NamespaceConfigParser2
 
 from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
@@ -150,7 +150,7 @@ class CushUser(object):
 
 
 
-class UserConfigParser(NamespaceConfigParser):
+class UserConfigParser(NamespaceConfigParser2):
     def __init__(self, dictConfig=None, users=None, merge=False, prefix=None, nsroot=None):
         """
         Description:

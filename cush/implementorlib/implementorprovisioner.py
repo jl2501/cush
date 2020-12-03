@@ -36,8 +36,11 @@ class SimpleWrap(object):
 class ImplementorProvisioner(object):
     """
     Description:
-        Abstract Base Class Mixin for writing methods that create implementors. Contains
-        methods and links to the namespaces to take care of:
+        Container object for streamlining process of writing methods that create implementors. 
+        Expected workflow is that a user should simply subclass this class and write a single method
+        named "make_implementors" (and some boilerplate __init__ to call super().__init__())
+
+        Contains methods and links to the namespaces to take care of:
             * putting the implementors created into the implementor namespace
             * put this ImplementorProvisioner object into the implementor_provisioner
               namespace
@@ -63,9 +66,6 @@ class ImplementorProvisioner(object):
         Description:
             Required user-supplied method that outputs a set of objects to be added to the
             implementor namespace
-            If the user wishes to have their implementor inputs correctly added to the
-            implementor input namespace, they must call super().make_implementors() (this
-            method) as this takes care of that.
         """
         log = LoggerAdapter(logger, {'name_ext' :\
             'ImplementorProvisioner.make_implementors'})

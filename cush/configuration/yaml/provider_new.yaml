@@ -3,7 +3,7 @@ boto3:
         ec2:
             instances:
                 get:
-                    __primitives__:
+                    _primitives:
                         - SimpleAddendum:
                             implementor: nsid://.implementor.boto3.aws.ec2.resource
                             addendum: .instances
@@ -15,7 +15,7 @@ boto3:
                             formatter: nsid://.formatter.__builtins__.list
 
                 create:
-                    __primitives__:
+                    _primitives__:
                         - ParametizedCall:
                             implementor: nsid://.implementor.boto3.aws.ec2.resource
                             call_params: nsid://.param.boto3.aws.ec2.instances.create

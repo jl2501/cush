@@ -2,13 +2,20 @@ __version__ = "0.0.1"
 
 import logging
 import logging.config
+
+from thewired import Namespace
+
 from .app import CushApplication, get_cush
 
 
-step_initialize=True
+
+
 init_namespaces = ['user', 'implementor', 'default', 'param', 'provider', 'sdk']
 
-def init_cush(application_name='default', step=step_initialize,
+#- top level root namespace that contains even the cush application objects
+_rootns = Namespace()
+
+def init_cush(application_name='default', step=True,
         namespaces=init_namespaces, overwrite=True):
     """
     call this after importing to initialize the cush namespaces
@@ -24,8 +31,8 @@ def init_cush(application_name='default', step=step_initialize,
         x = input("Initializing Bare Application Object: [Enter to continue]")
 
 
-    from cush.app import CushApplication
-    _cushapp = CushApplication(name='default')
+    app_nsroot = _rootns.get_handle('.application.default', create_nodes=True)
+    _cushapp = CushApplication(namespace=app_nsroot)
 
     #- mapping of names to init methods
     name_to_init_method = {
@@ -44,7 +51,3 @@ def init_cush(application_name='default', step=step_initialize,
                 name_to_init_method[ns_name]()
         else:
             name_to_init_method[ns_name]()
-
-
-#- setup module-level namespace
-applications = CushApplication.nsroot.applications
