@@ -5,25 +5,25 @@ from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
 
 
-class AwsCredential(NamespaceNodeBase):
+class AwsCredential(object):
     """
     Description:
         AWS API Credentials object; just the access key id and secret access key
         strings
     """
-    def __init__(self, nsid, access_key_id, secret_access_key, session_token=None):
+    def __init__(self, access_key_id, secret_access_key, session_token=None):
         """
         Input:
             access_key_id: AWS API Access Key ID
             secret_access_key: AWS API Secret Access Key for this Access Key ID
         """
-        super().__init__(nsid)
+        super().__init__()
         self.access_key_id =  access_key_id
         self.secret_access_key = secret_access_key
         self.session_token = session_token
 
     def __str__(self):
-        return 'AwsCredential: '  + self.access_key_id
+        return 'AwsCredential: ' + self.access_key_id
 
 
 

@@ -2,13 +2,14 @@ import copy
 import os
 
 from thewired import NamespaceNode, NamespaceConfigParser, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import NamespaceConfigParser2
 from thewired.namespace.nsid import make_child_nsid
 
 from cush.util import ProviderClassTable
 import cush.configuration as configuration
 import cush.defaults as defaults
 from cush.util import load_yaml_file
-from cush.namespace import SdkConfigParser, UserConfigParser, ProviderConfigParser
+from cush.namespace import SdkConfigParser, ProviderConfigParser
 from cush.namespace import ParamConfigParser
 import cush.implementorlib as implementorlib
 from cush.implementorlib.flipswitch import Flipswitch
@@ -81,7 +82,7 @@ class CushApplication(NamespaceNodeBase):
         self._ns = namespace
 
         #- initialize the NamespaceNodeBase stuff
-        super().__init__(make_child_nsid('.application', f'{self.name}'))
+        super().__init__(make_child_nsid('.application', f'{self.name}'), self._ns)
 
 
         #- save this instance of CushApplication object to be looked up by name
@@ -118,13 +119,14 @@ class CushApplication(NamespaceNodeBase):
                 "param",
                 "provider",
                 "sdk",
-                "ui"
+                "ui",
+                "formatter" #TODO
         ]
         for nsname in cush_namespaces:
             self._ns.add_exactly_one('.'+nsname)
 
 
-    def init_user_namespace(self, node=None, flipswitch_root=None, overwrite=True):
+    def init_user_namespace(self):
         """
         Description:
             Initialize new style user namespace
@@ -133,28 +135,22 @@ class CushApplication(NamespaceNodeBase):
         log.debug("Entering")
         log.info('Initializing user namespace...')
 
-        #X if node is None:
-        #X     node = self.user
+        """
+        TODOS
+        remove node, sub with _ns
+        update userconfigparser to use NamespaceConfigParser2
+        """
 
-        user_ns_parser = UserConfigParser(nsroot=self.app_nsroot)
+        user_ns_handle = self._ns.get_handle('.user', create_nodes=True)
+        user_ns_parser = NamespaceConfigParser2(namespace=user_ns_handle)
         dictConfig = load_yaml_file(defaults.user_file)
+        user_ns_parser.parse(dictConfig)
 
-        user_ns = user_ns_parser.parse(dictConfig)
-        log.debug("Got user namespace roots: {}".format(user_ns))
-
-        if flipswitch_root is None:
-            fs_root = self.flipswitch
-        else:
-            fs_root = flipswitch_root
-
-        for root_node in user_ns:
-            log.debug("adding '{}' to '{}'".format(root_node, node))
-            node._add_ns(root_node, overwrite=overwrite)
-        
-            for nsid, user in root_node._list_leaves(nsids=True):
-                fs = Flipswitch(nsid=nsid, nsroot=self.app_nsroot)
-                self.flipswitch._add_item(nsid, fs)
-        log.debug("Exiting")
+        #- create empty controlling flipswitches for each user / credential object loaded
+        #for nsid, user in root_node._list_leaves(nsids=True):
+        #    fs = Flipswitch(nsid=nsid, nsroot=self.app_nsroot)
+        #    self.flipswitch._add_item(nsid, fs)
+        #log.debug("Exiting")
 
 
     def init_implementor_namespace(self, mock=False, overwrite=True):
