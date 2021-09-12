@@ -14,9 +14,9 @@ class AwsBotoEc2Provisioner(ImplementorProvisioner):
         log = LoggerAdapter(logger, {'name_ext': 'provision_implementors'})
         log.info('provisioning boto ec2 connections implementor')
         ec2_connections = list()
-        creds = self.lookup_user(users, nsids=True)
+        creds = self.lookup_user(users)
         region_imps = self.lookup_implementor(regions)
-        for cred_nsid, cred_x in creds:
+        for cred_x in creds:
             for region_x in region_imps:
                 log.debug('provisioning boto.aws.ec2.connections.{}'.format(region_x))
                 ec2_c = boto.ec2.connect_to_region(\
@@ -25,7 +25,7 @@ class AwsBotoEc2Provisioner(ImplementorProvisioner):
                     region_name=str(region_x))
 
                 if ec2_c:
-                    ec2_c._cush_credential_nsid = cred_nsid
+                    ec2_c._cush_credential_nsid = str(cred_x.nsid)
                     ec2_connections.append(ec2_c)
                     fs = self.make_flipswitch(ec2_c)
 

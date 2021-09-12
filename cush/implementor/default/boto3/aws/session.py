@@ -17,17 +17,22 @@ class AwsSessionProvisioner(ImplementorProvisioner):
 
 
     def make_implementors(self, credentials='aws', regions='boto.aws.ec2.regions'):
-        log = LoggerAdapter(logger, {'name_ext' : 'provision_implementors'})
+        log = LoggerAdapter(logger, dict(name_ext='make_implementors'))
         log.info('provisioning boto3 session implementors')
 
 
         all_sessions = list()
-        creds = self.lookup_user(credentials, nsids=True)
-        region_imps = self.lookup_implementor(regions)
+        log.info(f"calling self.lookup_user({credentials})")
+        creds = list(self.lookup_user(credentials))
+        log.info(f"lookup_user returned these credentials: {creds}")
+
+        log.info(f"calling self.lookup_implementor({regions})")
+        region_imps = list(self.lookup_implementor(regions))
+        log.info(f"lookup_implementor returned these region implementors: {region_imps}")
 
         #- create the implementors for each user credential
-        for cred_nsid, cred_x in creds:
-            log.debug(f"Using credential: {cred_nsid}:{cred_x}")
+        for cred_x in creds:
+            log.debug(f"using credential: {cred_x}")
 
             #- create implementors for each region
             for region_x in region_imps:
@@ -38,7 +43,7 @@ class AwsSessionProvisioner(ImplementorProvisioner):
                 if session:
                     #- keep name of user credentials used to create
                     #- used to further namespace the implementors based on user
-                    session._cush_credential_nsid = cred_nsid
+                    session._cush_credential_nsid = str(cred_x.nsid)
 
                     #- control sessions with both users and regions
                     region_fs = self.get_flipswitch_from_implementor(regions, region_x)

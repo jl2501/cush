@@ -2,6 +2,7 @@ import copy
 import os
 
 from thewired import NamespaceNode, NamespaceConfigParser, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import DelegateNode
 from thewired import NamespaceConfigParser2
 from thewired.namespace.nsid import make_child_nsid
 
@@ -82,7 +83,7 @@ class CushApplication(NamespaceNodeBase):
         self._ns = namespace
 
         #- initialize the NamespaceNodeBase stuff
-        super().__init__(make_child_nsid('.application', f'{self.name}'), self._ns)
+        super().__init__(nsid=make_child_nsid('.application', f'{self.name}'), namespace=self._ns)
 
 
         #- save this instance of CushApplication object to be looked up by name
@@ -110,7 +111,7 @@ class CushApplication(NamespaceNodeBase):
             manipulates the containing namespace to add the expected set
         """
         cush_namespaces = [
-                "flipswtich",
+                "flipswitch",
                 "user",
                 "implementor",
                 "implementor_input",
@@ -123,7 +124,7 @@ class CushApplication(NamespaceNodeBase):
                 "formatter" #TODO
         ]
         for nsname in cush_namespaces:
-            self._ns.add_exactly_one('.'+nsname)
+            self._ns.add_exactly_one('.' + nsname)
 
 
     def init_user_namespace(self):
@@ -147,10 +148,9 @@ class CushApplication(NamespaceNodeBase):
         user_ns_parser.parse(dictConfig)
 
         #- create empty controlling flipswitches for each user / credential object loaded
-        #for nsid, user in root_node._list_leaves(nsids=True):
-        #    fs = Flipswitch(nsid=nsid, nsroot=self.app_nsroot)
-        #    self.flipswitch._add_item(nsid, fs)
-        #log.debug("Exiting")
+        for user in self._ns.get_subnodes('.user'):
+            self._ns.add(f".flipswitch{user.nsid}", Flipswitch)
+        log.debug("Exiting")
 
 
     def init_implementor_namespace(self, mock=False, overwrite=True):
@@ -226,13 +226,9 @@ class CushApplication(NamespaceNodeBase):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_default_namespace'})
         log.debug("Entering")
         log.info("Initializing Defaults Namespace...")
-        node = self.default if node is None else node
+        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.default'))
         dictConfig = load_yaml_file(defaults.defaults_ns_file)
-        parser = NamespaceConfigParser(prefix='default', nsroot=self.app_nsroot)
-        ns_roots = parser.parse(dictConfig)
-        for ns_x in ns_roots:
-            node._add_ns(ns_x)
-
+        parser.parse(dictConfig)
         log.debug("Exiting")
 
 
@@ -243,46 +239,90 @@ class CushApplication(NamespaceNodeBase):
         Input:
             node: root node of the parameters namespace. (defaults to self.params)
         """
+        params_key = '__params__'
+        def parse_input_mutator(dictConfig, key):
+            new_key_name = "raw"
+
+            mutated_config =  {
+                new_key_name: {
+                    "__class__" : "thewired.DelegateNode",
+                    "__init__" : {
+                        "delegate" : {
+                            "__class__" : "builtins.dict",
+                            "__init__" : dictConfig[key]
+                        }
+                    }
+                }
+            }
+            return (mutated_config, new_key_name)
+
+
+
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_parameter_namespace'})
         log.debug("Entering")
         log.info("Initializing Parameters Namespace...")
-        node = self.param if node is None else node
-        self.param.nsroot = self.app_nsroot
+        #node = self.param if node is None else node
+        #self.param.nsroot = self.app_nsroot
         dictConfig = load_yaml_file(defaults.params_ns_file)
 
-        parser = ParamConfigParser(node, nsroot=self.app_nsroot)
+        #parser = ParamConfigParser(node, nsroot=self.app_nsroot)
+        parser = NamespaceConfigParser2(
+                        namespace=self._ns.get_handle('.param'),
+                        callback_target_keys=["__params__"],
+                        input_mutator_callback=parse_input_mutator)
 
-        params_ns_roots = parser.parse(dictConfig)
-        for ns_root in params_ns_roots:
-            node._add_ns(ns_root)
+        #params_ns_roots = parser.parse(dictConfig)
+        parser.parse(dictConfig)
+
+        #for ns_root in params_ns_roots:
+        #    node._add_ns(ns_root)
 
         log.debug("Exiting")
 
 
-    def init_provider_namespace(self, node=None):
+    def init_provider_namespace(self):
         log = LoggerAdapter(logger, {'name_ext' :\
             'CushApplication.init_provider_namespace'})
 
         log.debug("Entering")
         log.info("Initializing provider namespace...")
-        if node is None:
-            node = self.provider
-
         dictConfig = load_yaml_file(defaults.providers_ns_file)
-        pct = ProviderClassTable()
-        parser = ProviderConfigParser(\
-            implementor_ns=self.implementor,\
-            implementor_state_ns=self.flipswitch,\
-            provider_ns=node,\
-            nsroot=self.app_nsroot,\
-            provider_cls_tab=pct)
 
-        provider_ns_roots = parser.parse(dictConfig)
-        for n,ns in enumerate(provider_ns_roots):
-            log.debug("adding provider namespace root #{}: {}".format(n, ns))
-            node._add_ns(ns)
+        pct = ProviderClassTable()
+        trigger_keys = pct.keys()
+
+        def mutator(dictConfig, key):
+            """
+            rewrite the config so the generic parser creates the Provider class objects
+            """
+            log.debug(f"Entering: {key=} | {dictConfig=}")
+            new_key_name = "provider"
+
+            init_dictConfig = copy.copy(dictConfig[key])
+            init_dictConfig["implementor_namespace"] = self._ns.get_handle(".implementor")
+            mutated_config =  {
+                new_key_name: {
+                    "__class__" : "thewired.DelegateNode",
+                    "__init__" : {
+                        "delegate" : {
+                            "__class__" : f"thewired.{key}",
+                            "__init__" : init_dictConfig
+                        }
+                    }
+                }
+            }
+
+            return (mutated_config, new_key_name)
+            
+
+        parser = NamespaceConfigParser2(
+                    namespace=self._ns.get_handle('.provider'),
+                    callback_target_keys=trigger_keys,
+                    input_mutator_callback=mutator)
+        parser.parse(dictConfig)
 
         log.debug("Exiting")
+        return
 
 
     def init_sdk_namespace(self, node=None):
@@ -293,15 +333,19 @@ class CushApplication(NamespaceNodeBase):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace'})
         log.debug("Entering")
         log.info('Initializing SDK namespace...')
-        if node is None:
-            node = self.sdk
+        #if node is None:
+        #    node = self.sdk
 
+        parser = NamespaceConfigParser(namespace=self._ns.get_handle('.sdk'))
         dictConfig = load_yaml_file(defaults.sdk_ns_file) 
-        sdk_conf_parser = SdkConfigParser(provider_ns = self.provider,\
-            nsroot=self.app_nsroot)
-        sdk_ns_roots = sdk_conf_parser.parse(dictConfig)
-        for ns in sdk_ns_roots:
-            node._add_ns(ns)
+        parser.parse(dictConfig)
+
+        #sdk_conf_parser = SdkConfigParser(provider_ns = self.provider,\
+        #    nsroot=self.app_nsroot)
+        #sdk_ns_roots = sdk_conf_parser.parse(dictConfig)
+        #for ns in sdk_ns_roots:
+        #    node._add_ns(ns)
+
         log.debug("Exiting")
 
 

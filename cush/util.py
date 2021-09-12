@@ -88,6 +88,3 @@ class ProviderClassTable(object):
     def __new__(cls):
         #- always update and have only one
         return ClassTable(get_provider_classes())
-
-
-

@@ -114,18 +114,18 @@ class AwsRole(object):
         
 
 
-class CushUser(object):
+class CushUser(NamespaceNodeBase):
     """
     Description:
-        User object is just a named credential set
+        User object is just a named credential set that will be added to the user Namespace
     """
-    def __init__(self, name, credential):
+    def __init__(self, name, credential, *, nsid, namespace):
         """
         Input:
             name: logical name for this user
             credential: sdk-specific credential object
         """
-        super().__init__()
+        super().__init__(nsid=nsid, namespace=namespace)
         self.name = name
         self.credential = credential
 
