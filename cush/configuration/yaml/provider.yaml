@@ -4,13 +4,13 @@ boto3:
             instances:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .instances.all()
                         formatter: list
 
                 create:
                     AddendumFormatter:
-                      implementor: boto3.aws.ec2.resource
+                      implementor: .boto3.aws.ec2.resource
                       implementor_key: nsid://implementor_key.boto3.aws.ec2.resource
                       addendum: nsid://param.boto3.aws.ec2.instances.create
                       formatter: None
@@ -18,7 +18,7 @@ boto3:
             interfaces:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .network_interfaces.all()
                         formatter: list
 
