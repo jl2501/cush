@@ -2,14 +2,19 @@ import pytest
 
 import cush
 from cush import __version__
+from thewired import Namespace
 
 def test_version():
     assert __version__ == '0.0.1'
 
-@pytest.fixture
-def cush_application():
-    cush.init_cush(step=False)
-    return cush.CushApplication()
+def test_CushApplication_init():
+    c = cush.CushApplication(name='test1', namespace=Namespace())
+    assert c.name == 'test1'
 
-def test_CushApplication(cush_application):
-    assert cush_application.name == 'default'
+def test_init_user():
+    cushapp = cush.CushApplication(name='test2', namespace=Namespace())
+    cushapp.init_user_namespace()
+
+def test_init_cush():
+    cush.init_cush(step=False)
+    assert cush.get_cush().name == 'default'

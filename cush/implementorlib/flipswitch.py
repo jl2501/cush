@@ -2,31 +2,45 @@ from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
 
 import collections
+from typing import Union
+from thewired import Namespace, NamespaceNodeBase, Nsid
 
-class Flipswitch(object):
+#TODO: move Flipswitch to thewired; its wiring
+class Flipswitch(NamespaceNodeBase):
     """
     Description:
-        Base class for all the types that can be used to create implementors.
-        Implementors are responsible for implementing the final calls and attribute
-        references for all the NamespaceNodes that are created, and thus they are the
-        objects that create the objects that we are generally interested in working with
-        during a user session. Implementors themselves are what gets turned on/off with
-        the FlipSwitch Workflow, interfaced with via the Flipswitch namespace. 
+        Set an implementor's state to be "on" / "off".
+        When an implementor is used, this object should be looked up to find its on/off state.
+
+        If cush's design thought that modifying implementor objects was a good idea,
+        then this could just be an attribute on each implementor object that would say
+        at runtime if it was "active" or not, and the code using it could care / not care about that,
+        but would generally use that attribute to selectively skip making any actual call to any implmentor
+        whose Flipswitch state is 'off'.
+
+        One other thing this object does is allow one to chain flipswitches via its children attribute.
+        Any time a flipswitch changes state through normal mechanisms, the state will be propagated to all the
+        Flipswitches that are members of the `children` attribute
+
+        (we don't want to modify implementor objects after they've been returned from the provisioner b/c we don't actually
+         have any guarantee that these objects are mutable. Wrapping them is possible, but then that breaks the concept of the
+         implementor namespace where you can have a single namespace of all the raw sdk objects with simple names, which by itself
+         is pretty useful even w/out the rest of the configs that are possible to create the higher layer namespaces)
+        
     """
-    def __init__(self, nsroot, nsid=None, state='on'):
+    def __init__(self, state:str='on', *, nsid:Union[str, Nsid], namespace:Namespace):
         """
         Input:
             state: "on" or "off"
         """
         log = LoggerAdapter(logger, {'name_ext' : 'Flipswitch.__init__'})
-        log.debug("Entering")
+        log.debug(f"entering: {nsid=} {namespace=}")
+        super().__init__(nsid=nsid, namespace=namespace)
         self.children = list()    #- outputs from all implementor provisioners using this
         self._active_names = ['on', 'active', True]
         self._inactive_names = ['off', 'inactive', False]
         self.state = state
-        self.nsroot = nsroot
-        self.nsid = str(nsid)
-        log.debug("Exiting")
+        log.debug("exiting")
 
     @property
     def state(self):
@@ -60,8 +74,10 @@ class Flipswitch(object):
         #- propagate to children
         for child in self.children:
             if isinstance(child, str):
+                child_nsid = child
                 #- treat as NSID
-                child = self.nsroot.flipswitch._lookup(child)
+                #child = self.ns.flipswitch._lookup(child_nsid)
+                child = self._ns.lookup('.flipswitch' + child_nsid)
             log.debug("Propagating state for child {}".format(child))
             child.state = self.state
         log.debug("Exiting")

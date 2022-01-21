@@ -2,6 +2,7 @@
 aws:
     ec2:
         instances:
+            __class__: thewired.NamespaceNode
             __call__ :
                 provider: nsid://.boto3.aws.ec2.instances.get
             new:

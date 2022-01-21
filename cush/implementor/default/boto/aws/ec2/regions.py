@@ -11,6 +11,7 @@ class AwsRegionProvisioner(ImplementorProvisioner):
 
     def make_implementors(self):
         log = LoggerAdapter(logger, {'name_ext': 'provision_implementors'})
+        log.info("provisioning EC2 regions")
         regions = [
           'ap-northeast-1',
           'ap-northeast-2',

@@ -1,14 +1,15 @@
 import copy
 import os
 
-import thewired
-from thewired import NamespaceNode, NamespaceConfigParser, NamespaceLookupError
+from thewired import NamespaceNode, NamespaceConfigParser2, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import DelegateNode
+from thewired.namespace.nsid import make_child_nsid
 
 from cush.util import ProviderClassTable
 import cush.configuration as configuration
 import cush.defaults as defaults
 from cush.util import load_yaml_file
-from cush.namespace import SdkConfigParser, UserConfigParser, ProviderConfigParser
+from cush.namespace import SdkConfigParser, ProviderConfigParser
 from cush.namespace import ParamConfigParser
 import cush.implementorlib as implementorlib
 from cush.implementorlib.flipswitch import Flipswitch
@@ -19,15 +20,14 @@ from logging import getLogger, LoggerAdapter
 logger = getLogger(__name__)
 
 
-
-class CushApplication(object):
+class CushApplication(NamespaceNodeBase):
     """
     Description:
         Container for the application state
     """
     #- app_name -> application instance mapping
-    nsroot = NamespaceNode(namespace_id='.')
-    nsroot._add_child('applications')
+    #- allows us to have multiple CushApplication objects at once
+    #- each one will have its own setup if needed
     _applications = dict()
 
     @classmethod 
@@ -36,7 +36,7 @@ class CushApplication(object):
         Description:
             get a named application object from the class' list of instances by name
         """
-        log = LoggerAdapter(logger, {'name_prefix' : 'CushApplication.get_application'})
+        log = LoggerAdapter(logger, dict(name_prefix='CushApplication.get_application'))
         try:
             app = cls._applications[name]
         except KeyError:
@@ -47,11 +47,12 @@ class CushApplication(object):
 
 
 
-    def __new__(cls, name='default'):
-        log = LoggerAdapter(logger, {'name_ext' : 'CushApplication.__new__'})
+    def __new__(cls, name='default', *args, **kwargs):
+        log = LoggerAdapter(logger, dict(name_ext='CushApplication.__new__'))
         try:
             app = cls._applications[name]
             log.debug("Found existing application named: {}".format(name))
+
         except (KeyError, NamespaceLookupError):
             log.debug("Creating new application object named: {}".format(name))
             app = super().__new__(cls)
@@ -60,13 +61,15 @@ class CushApplication(object):
 
 
 
-    def __init__(self, name='default'):
+    def __init__(self, name='default', namespace=None):
         """
         Input:
             name: application object name
+            namespace: the namespace object that contains this cush application
         """
-        log = LoggerAdapter(logger, {'name_ext' : 'CushApplication.__init__'})
+        log = LoggerAdapter(logger, dict(name_ext='CushApplication.__init__'))
         log.debug("Entering")
+
         #- add self to the class level named list of application object instances
         if name in self._applications.keys():
             #- do not reinitialize existing application object
@@ -76,74 +79,54 @@ class CushApplication(object):
         #- else, we are a new CushApplication instance
         #- so go through all the initialization as normal
         self.name = name
-        self._nsid = self.nsroot._nsid + '.'.join(['applications', self.name])
-        self.app_nsroot = NamespaceNode(\
-            namespace_id='{}'.format(self._nsid), nsroot=self.nsroot,\
-            is_nsroot=True)
-        
+        self._ns = namespace
 
+        #- initialize the NamespaceNodeBase stuff
+        super().__init__(nsid=make_child_nsid('.application', f'{self.name}'), namespace=self._ns)
+
+
+        #- save this instance of CushApplication object to be looked up by name
         CushApplication._applications[self.name] = self
-        CushApplication.nsroot.applications._set_item(self.name, self)
 
-        #- flipswitches namespace
-        self.flipswitch = NamespaceNode(\
-            namespace_id = '.applications.{}.flipswitch'.format(self.name),\
-            nsroot = self.app_nsroot)
+        self._create_cush_namespaces()
 
-        #- users namespace
-        self.user = NamespaceNode(\
-            namespace_id = '.applications.{}.user'.format(self.name),\
-            nsroot = self.app_nsroot)
-
-        #- initialized by _make_implementors
-        #- implementors namespace
-        self.implementor = NamespaceNode(\
-            namespace_id = '.applications.{}.implementor'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- implementor inputs namespace
-        self.implementor_input = NamespaceNode(\
-            namespace_id = '.applications.{}.implementor_input'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- implementor provisioner namespace
-        self.implementor_provisioner = NamespaceNode(\
-            namespace_id = '.applications.{}.implementor_provisioner'.format(self.name),
-            nsroot = self.app_nsroot)
-        #- end of namespaces initialized by _make_implementors
-
-        #- defaults namespace
-        self.default = NamespaceNode(\
-            namespace_id = '.applications.{}.default'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- parameter namespace
-        self.param = NamespaceNode(\
-            namespace_id = '.applications.{}.param'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- providers namespace
-        self.provider = NamespaceNode(\
-            namespace_id = '.applications.{}.provider'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- sdk / primary logical overlay namespace
-        self.sdk = NamespaceNode(\
-            namespace_id = '.applications.{}.sdk'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        #- ui / secondary logical overlay namespace
-        self.ui = NamespaceNode(\
-            namespace_id = '.applications.{}.ui'.format(self.name),
-            nsroot = self.app_nsroot)
-
-        log.debug('nsroot: {}'.format(self.nsroot))
         log.debug('****** finished initializing CushApplication')
         log.debug("Exiting")
 
 
+    def _create_cush_namespaces(self):
+        """
+        Description:
+            cush has a set of expected namespaces that need to all be in place
+            for the env to work
 
-    def init_user_namespace(self, node=None, flipswitch_root=None, overwrite=True):
+            this is where we set all of them up
+
+        Input:
+            None
+        Output:
+            None
+        Side-Effects:
+            manipulates the containing namespace to add the expected set
+        """
+        cush_namespaces = [
+                "flipswitch",
+                "user",
+                "implementor",
+                "implementor_input",
+                "implementor_provisioner",
+                "default",
+                "param",
+                "provider",
+                "sdk",
+                "ui",
+                "formatter" #TODO
+        ]
+        for nsname in cush_namespaces:
+            self._ns.add_exactly_one('.' + nsname)
+
+
+    def init_user_namespace(self):
         """
         Description:
             Initialize new style user namespace
@@ -151,25 +134,15 @@ class CushApplication(object):
         log = LoggerAdapter(logger, {'name_ext' : 'CushApplication.init_user_namespace'})
         log.debug("Entering")
         log.info('Initializing user namespace...')
-        if node is None:
-            node = self.user
-        user_ns_parser = UserConfigParser(nsroot=self.app_nsroot)
+
+        user_ns_handle = self._ns.get_handle('.user', create_nodes=True)
+        user_ns_parser = NamespaceConfigParser2(namespace=user_ns_handle)
         dictConfig = load_yaml_file(defaults.user_file)
-        user_ns = user_ns_parser.parse(dictConfig)
-        log.debug("Got user namespace roots: {}".format(user_ns))
+        user_ns_parser.parse(dictConfig)
 
-        if flipswitch_root is None:
-            fs_root = self.flipswitch
-        else:
-            fs_root = flipswitch_root
-
-        for root_node in user_ns:
-            log.debug("adding '{}' to '{}'".format(root_node, node))
-            node._add_ns(root_node, overwrite=overwrite)
-        
-            for nsid, user in root_node._list_leaves(nsids=True):
-                fs = Flipswitch(nsid=nsid, nsroot=self.app_nsroot)
-                self.flipswitch._add_item(nsid, fs)
+        #- create empty controlling flipswitches for each user / credential object loaded
+        for user in self._ns.get_subnodes('.user'):
+            self._ns.add(f".flipswitch{user.nsid}", Flipswitch)
         log.debug("Exiting")
 
 
@@ -246,13 +219,9 @@ class CushApplication(object):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_default_namespace'})
         log.debug("Entering")
         log.info("Initializing Defaults Namespace...")
-        node = self.default if node is None else node
+        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.default'))
         dictConfig = load_yaml_file(defaults.defaults_ns_file)
-        parser = NamespaceConfigParser(prefix='default', nsroot=self.app_nsroot)
-        ns_roots = parser.parse(dictConfig)
-        for ns_x in ns_roots:
-            node._add_ns(ns_x)
-
+        parser.parse(dictConfig)
         log.debug("Exiting")
 
 
@@ -263,46 +232,92 @@ class CushApplication(object):
         Input:
             node: root node of the parameters namespace. (defaults to self.params)
         """
+        params_key = '__params__'
+        def parse_input_mutator(dictConfig, key):
+            new_key_name = "raw"
+
+            mutated_config =  {
+                new_key_name: {
+                    "__class__" : "thewired.DelegateNode",
+                    "__init__" : {
+                        "delegate" : {
+                            "__class__" : "builtins.dict",
+                            "__init__" : dictConfig[key]
+                        }
+                    }
+                }
+            }
+            return (mutated_config, new_key_name)
+
+
+
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_parameter_namespace'})
         log.debug("Entering")
         log.info("Initializing Parameters Namespace...")
-        node = self.param if node is None else node
-        self.param.nsroot = self.app_nsroot
         dictConfig = load_yaml_file(defaults.params_ns_file)
 
-        parser = ParamConfigParser(node, nsroot=self.app_nsroot)
+        parser = NamespaceConfigParser2(
+                        namespace=self._ns.get_handle('.param'),
+                        callback_target_keys=["__params__"],
+                        input_mutator_callback=parse_input_mutator)
 
-        params_ns_roots = parser.parse(dictConfig)
-        for ns_root in params_ns_roots:
-            node._add_ns(ns_root)
-
+        parser.parse(dictConfig)
         log.debug("Exiting")
 
 
-    def init_provider_namespace(self, node=None):
+    def init_provider_namespace(self):
         log = LoggerAdapter(logger, {'name_ext' :\
             'CushApplication.init_provider_namespace'})
 
         log.debug("Entering")
         log.info("Initializing provider namespace...")
-        if node is None:
-            node = self.provider
-
         dictConfig = load_yaml_file(defaults.providers_ns_file)
-        pct = ProviderClassTable()
-        parser = ProviderConfigParser(\
-            implementor_ns=self.implementor,\
-            implementor_state_ns=self.flipswitch,\
-            provider_ns=node,\
-            nsroot=self.app_nsroot,\
-            provider_cls_tab=pct)
 
-        provider_ns_roots = parser.parse(dictConfig)
-        for n,ns in enumerate(provider_ns_roots):
-            log.debug("adding provider namespace root #{}: {}".format(n, ns))
-            node._add_ns(ns)
+        pct = ProviderClassTable()
+        trigger_keys = list(pct.keys())
+        log.debug(f"got parse callback trigger keys: {trigger_keys=}")
+
+        ########################################################################
+        # begin parsing callback
+        #
+        def provider_mutator(dictConfig, key):
+            """
+            rewrite the config so the generic parser creates the Provider class objects
+            """
+            log = LoggerAdapter(logger, dict(name_ext='CushApplication.init_provider_namespace.provider_mutator'))
+            log.debug(f"Entering: {key=} | {dictConfig=}")
+            new_key_name = None  #- special code to overwrite node with result of parsing this returned config
+
+            init_dictConfig = copy.copy(dictConfig[key])
+            init_dictConfig["implementor_namespace"] = self._ns.get_handle(".implementor")
+            log.debug(f"got handle to implementor ns: {init_dictConfig['implementor_namespace']=}")
+            mutated_config =  {
+                new_key_name: {
+                    "__class__" : "thewired.DelegateNode",
+                    "__init__" : {
+                        "delegate" : {
+                            "__class__" : f"thewired.{key}",
+                            "__init__" : init_dictConfig
+                        }
+                    }
+                }
+            }
+
+            log.debug(f"Exiting: {mutated_config=} | {new_key_name=}")
+            return (mutated_config, new_key_name)
+        #
+        # end parsing callback
+        ########################################################################
+            
+        parser = NamespaceConfigParser2(
+                    namespace=self._ns.get_handle('.provider'),
+                    callback_target_keys=trigger_keys,
+                    input_mutator_callback=provider_mutator)
+
+        parser.parse(dictConfig)
 
         log.debug("Exiting")
+        return
 
 
     def init_sdk_namespace(self, node=None):
@@ -313,15 +328,19 @@ class CushApplication(object):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace'})
         log.debug("Entering")
         log.info('Initializing SDK namespace...')
-        if node is None:
-            node = self.sdk
+        #if node is None:
+        #    node = self.sdk
 
+        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.sdk'))
         dictConfig = load_yaml_file(defaults.sdk_ns_file) 
-        sdk_conf_parser = SdkConfigParser(provider_ns = self.provider,\
-            nsroot=self.app_nsroot)
-        sdk_ns_roots = sdk_conf_parser.parse(dictConfig)
-        for ns in sdk_ns_roots:
-            node._add_ns(ns)
+        parser.parse(dictConfig)
+
+        #sdk_conf_parser = SdkConfigParser(provider_ns = self.provider,\
+        #    nsroot=self.app_nsroot)
+        #sdk_ns_roots = sdk_conf_parser.parse(dictConfig)
+        #for ns in sdk_ns_roots:
+        #    node._add_ns(ns)
+
         log.debug("Exiting")
 
 

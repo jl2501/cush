@@ -14,9 +14,9 @@ class AwsBotoElbProvisioner(ImplementorProvisioner):
         log = LoggerAdapter(logger, {'name_ext': 'provision_implementors'})
         log.info('provisioning boto elb implementor')
         elb_connections = list()
-        user_objs = self.lookup_user(users, nsids=True)
+        user_objs = self.lookup_user(users)
         region_imps = self.lookup_implementor(regions)
-        for cred_nsid, cred_x in user_objs:
+        for cred_x in user_objs:
             for region_x in region_imps:
                 elb_c = boto.ec2.elb.connect_to_region(\
                     aws_access_key_id=cred_x.access_key_id,\
@@ -24,7 +24,7 @@ class AwsBotoElbProvisioner(ImplementorProvisioner):
                     region_name=str(region_x))
 
                 if elb_c:
-                    elb_c._cush_credential_nsid = cred_nsid
+                    elb_c._cush_credential_nsid = str(cred_x.nsid)
                     elb_connections.append(elb_c)
                     fs = self.make_flipswitch(elb_c)
 

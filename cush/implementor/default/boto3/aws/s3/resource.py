@@ -8,10 +8,12 @@ class AwsS3ResourceProvisioner(ImplementorProvisioner):
     def __init__(self, root_nsid='boto3.aws.s3.resource',\
         key='meta.client.meta.region_name'):
 
+        super().__init__(root_nsid=root_nsid)
         nsid_exts = list()
-        nsid_exts.append(lambda x: x.meta.client.meta.region_name)
-        nsid_exts.append(lambda x: x._cush_credential_nsid)
-        super().__init__(root_nsid=root_nsid, nsid_exts=nsid_exts)
+        #nsid_exts.append(lambda x: x.meta.client.meta.region_name)
+        #nsid_exts.append(lambda x: x._cush_credential_nsid)
+        self.add_nsid_ext('meta.client.meta.region_name')
+        self.add_nsid_ext('_cush_credential_nsid')
 
     def make_implementors(self, sessions='boto3.aws.session'):
         log = LoggerAdapter(logger, {'name_ext' : 'provision_implementors'})

@@ -3,56 +3,64 @@ boto3:
         ec2:
             instances:
                 get:
-                    AddendumFormatter:
-                        implementor: .boto3.aws.ec2.resource
+                    __class__: thewired.AddendumFormatter
+                    __init__:
+                        implementor: boto3.aws.ec2.resource
                         addendum: .instances.all()
                         formatter: list
 
                 create:
-                    AddendumFormatter:
-                      implementor: .boto3.aws.ec2.resource
-                      implementor_key: nsid://implementor_key.boto3.aws.ec2.resource
-                      addendum: nsid://param.boto3.aws.ec2.instances.create
-                      formatter: None
+                    __class__: thewired.AddendumFormatter
+                    __init__:
+                        implementor: boto3.aws.ec2.resource
+                        implementor_key: nsid://implementor_key.boto3.aws.ec2.resource
+                        addendum: nsid://param.boto3.aws.ec2.instances.create
+                        formatter: None
 
             interfaces:
                 get:
-                    AddendumFormatter:
-                        implementor: .boto3.aws.ec2.resource
+                    __class__: thewired.AddendumFormatter
+                    __init__:
+                        implementor: boto3.aws.ec2.resource
                         addendum: .network_interfaces.all()
                         formatter: list
 
             keypairs:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.ec2.resource
                         addendum: .key_pairs.all()
                         formatter: list
 
             security_groups:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.ec2.resource
                         addendum: .security_groups.all()
                         formatter: list
 
             volumes:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.ec2.resource
                         addendum: .volumes.all(OwnerIds=['self'])
                         formatter: list
 
             snapshots:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.ec2.resource
                         addendum: .snapshots.filter(OwnerIds=['self'])
                         formatter: list
 
             vpc:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.ec2.resource
                         addendum: .vpcs.all()
                         formatter: list
@@ -60,7 +68,8 @@ boto3:
         s3:
             buckets:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto3.aws.s3.resource
                         addendum: .buckets.all()
                         formatter: list
@@ -69,14 +78,16 @@ boto:
         ec2:
             elbs:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                       implementor: boto.aws.ec2.elb.connections
                       addendum: .get_all_load_balancers()
                       formatter: None
             
             security_groups:
                 get:
-                    AddendumFormatter:
+                    __class__: thewired.AddendumFormatter
+                    __init__:
                         implementor: boto.aws.ec2.connections
                         addendum: .get_all_security_groups()
                         formatter: None
