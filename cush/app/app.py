@@ -1,9 +1,8 @@
 import copy
 import os
 
-from thewired import NamespaceNode, NamespaceConfigParser, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import NamespaceNode, NamespaceConfigParser2, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
 from thewired import DelegateNode
-from thewired import NamespaceConfigParser2
 from thewired.namespace.nsid import make_child_nsid
 
 from cush.util import ProviderClassTable
@@ -275,7 +274,8 @@ class CushApplication(NamespaceNodeBase):
         dictConfig = load_yaml_file(defaults.providers_ns_file)
 
         pct = ProviderClassTable()
-        trigger_keys = pct.keys()
+        trigger_keys = list(pct.keys())
+        log.debug(f"got parse callback trigger keys: {trigger_keys=}")
 
         ########################################################################
         # begin parsing callback
@@ -286,7 +286,7 @@ class CushApplication(NamespaceNodeBase):
             """
             log = LoggerAdapter(logger, dict(name_ext='CushApplication.init_provider_namespace.provider_mutator'))
             log.debug(f"Entering: {key=} | {dictConfig=}")
-            new_key_name = "provider"
+            new_key_name = None  #- special code to overwrite node with result of parsing this returned config
 
             init_dictConfig = copy.copy(dictConfig[key])
             init_dictConfig["implementor_namespace"] = self._ns.get_handle(".implementor")
