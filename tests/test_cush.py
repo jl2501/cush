@@ -14,3 +14,7 @@ def test_CushApplication_init():
 def test_init_user():
     cushapp = cush.CushApplication(name='test2', namespace=Namespace())
     cushapp.init_user_namespace()
+
+def test_init_cush():
+    cush.init_cush(step=False)
+    assert cush.get_cush().name == 'default'
