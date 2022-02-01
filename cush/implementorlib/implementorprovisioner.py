@@ -497,7 +497,6 @@ class ImplementorProvisioner(object):
         """
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_implementor"))
         log.debug(f"called with: {implementor_nsid=}")
-        #subnodes = self.implementor_ns_root.get_subnodes(f".{implementor_nsid}")
         subnodes = self.cush._ns.get_subnodes(f".implementor.{implementor_nsid}")
         return filter(lambda x: isinstance(x, DelegateNode), subnodes)
 
