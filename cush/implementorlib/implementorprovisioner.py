@@ -475,7 +475,7 @@ class ImplementorProvisioner(object):
             namespace under this new id
         """
         log = LoggerAdapter(logger, {'name_ext':\
-            'ImplementorProvisioner.modify_implementors_ns'})
+            'ImplementorProvisioner.modify_implementor_ns'})
         log.debug("Entering")
         log.debug("Modifying implementor namespace with: implementors: {}".format(\
             implementor_objs))
