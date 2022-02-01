@@ -481,7 +481,7 @@ class ImplementorProvisioner(object):
             implementor_objs))
 
         for imp in implementor_objs:
-            full_nsid = f".{self.get_full_nsid(imp)}"
+            full_nsid = sanitize_nsid(f".{self.get_full_nsid(imp)}")
             log.debug(f"adding item to implementor ns:  {full_nsid}--->{imp}")
 
             node_factory = partial(DelegateNode, imp)
@@ -530,8 +530,7 @@ class ImplementorProvisioner(object):
         full_nsid = self.get_full_nsid(imp)
         log.debug("flipswitch starting full_nsid: {}".format(full_nsid))
 
-        #full_nsid = self.cush._ns.root.nsid + '.implementor.' + full_nsid
-        full_nsid = make_child_nsid(str(self.implementor_ns_root.nsid), full_nsid)
+        full_nsid = sanitize_nsid(make_child_nsid(str(self.nsroots['implementor'].nsid), full_nsid))
         log.debug("final flipswitch full_nsid: {}".format(full_nsid))
 
         ###fs = Flipswitch(full_nsid, self.nsroot)
