@@ -99,7 +99,7 @@ class ImplementorProvisioner(object):
 
 
     @classmethod
-    def make_all_implementors(cls, pkgs=None, overwrite=False):
+    def make_all_implementors(cls, pkgs=None, overwrite=False, continue_after_failure=False):
         """
         Description:
             Instantiates the implementor objects. As all Implementors are provisioned /
@@ -153,6 +153,9 @@ class ImplementorProvisioner(object):
                 log.error("Failed to provision implementors: {}".format(\
                     provisioner))
                 log.exception(err)
+                if not continue_after_failure:
+                    raise err
+
         log.debug("Exiting")
 
 
