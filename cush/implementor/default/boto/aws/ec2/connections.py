@@ -5,7 +5,7 @@ from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 
 class AwsBotoEc2Provisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='boto.aws.ec2.connections'):
+    def __init__(self, root_nsid='.boto.aws.ec2.connections'):
         super().__init__(root_nsid=root_nsid)
         self.add_nsid_ext('region.name')
         self.add_nsid_ext('_cush_credential_nsid')

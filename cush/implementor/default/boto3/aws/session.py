@@ -4,7 +4,7 @@ logger = getLogger(__name__)
 from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 class AwsSessionProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='boto3.aws.session', priority=10):
+    def __init__(self, root_nsid='.boto3.aws.session', priority=10):
         """
         priority: 10 to wait until after regions have been created
         """

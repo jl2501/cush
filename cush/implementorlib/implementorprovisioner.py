@@ -99,7 +99,7 @@ class ImplementorProvisioner(object):
 
 
     @classmethod
-    def make_all_implementors(cls, pkgs=None, overwrite=False):
+    def make_all_implementors(cls, pkgs=None, overwrite=False, continue_after_failure=False):
         """
         Description:
             Instantiates the implementor objects. As all Implementors are provisioned /
@@ -153,6 +153,9 @@ class ImplementorProvisioner(object):
                 log.error("Failed to provision implementors: {}".format(\
                     provisioner))
                 log.exception(err)
+                if not continue_after_failure:
+                    raise err
+
         log.debug("Exiting")
 
 
@@ -196,12 +199,20 @@ class ImplementorProvisioner(object):
         module = inspect.getmodule(self)
         module_pkg = self.get_root_implementor_pkg_name(module)
         log.debug("module package: {}".format(module.__package__))
+
         self.app_name = get_implementor_app_name(module)
         log.debug("Using Application name: {}".format(self.app_name))
+
         self.cush = get_cush(self.app_name)
-        self.nsroot = self.cush._ns.root
-        self.implementor_ns_root = self.cush._ns.get_handle('.implementor')
-        self.flipswitch_ns_root = self.cush._ns.get_handle('.flipswitch')
+        self.nsroots = dict(
+                root=self.cush._ns.root,
+
+                implementor=self.cush._ns.get_handle('.implementor'),
+                implementor_input=self.cush._ns.get_handle('.implementor_input'),
+                implementor_provisioner=self.cush._ns.get_handle('.implementor_provisioner'),
+
+                flipswitch=self.cush._ns.get_handle('.flipswitch'))
+
         root_implementor_pkg = self.get_root_implementor_pkg_name(module)
         log.debug("root implementor module package: {}".format(root_implementor_pkg))
 
@@ -406,7 +417,7 @@ class ImplementorProvisioner(object):
 
         #- TODO: calculate and use NSID postfix
         node_factory = partial(DelegateNode, self)
-        self.cush._ns.add(f".implementor_provisioner.{self.root_nsid}", node_factory)
+        self.nsroots['implementor_provisioner'].add(self.root_nsid, node_factory)
         log.debug("Exiting")
         return
 
@@ -453,7 +464,7 @@ class ImplementorProvisioner(object):
             subkey = k
             nsid = '.'.join([self.root_nsid, subkey])
             log.debug(f"adding implementor_input node: {nsid=}")
-            self.cush._ns.add('.implementor_input' + '.' + nsid, DelegateNode, v)
+            self.nsroots['implementor_input'].add(nsid, DelegateNode, v)
             inputs_with_nsids.append((nsid, v))
         log.debug("Exiting")
         return inputs_with_nsids
@@ -467,17 +478,17 @@ class ImplementorProvisioner(object):
             namespace under this new id
         """
         log = LoggerAdapter(logger, {'name_ext':\
-            'ImplementorProvisioner.modify_implementors_ns'})
+            'ImplementorProvisioner.modify_implementor_ns'})
         log.debug("Entering")
         log.debug("Modifying implementor namespace with: implementors: {}".format(\
             implementor_objs))
 
         for imp in implementor_objs:
-            full_nsid = f".{self.get_full_nsid(imp)}"
+            full_nsid = sanitize_nsid(f".{self.get_full_nsid(imp)}")
             log.debug(f"adding item to implementor ns:  {full_nsid}--->{imp}")
 
             node_factory = partial(DelegateNode, imp)
-            self.implementor_ns_root.add(full_nsid, node_factory)
+            self.nsroots['implementor'].add(full_nsid, node_factory)
 
         log.debug("Exiting")
 
@@ -489,7 +500,6 @@ class ImplementorProvisioner(object):
         """
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_implementor"))
         log.debug(f"called with: {implementor_nsid=}")
-        #subnodes = self.implementor_ns_root.get_subnodes(f".{implementor_nsid}")
         subnodes = self.cush._ns.get_subnodes(f".implementor.{implementor_nsid}")
         return filter(lambda x: isinstance(x, DelegateNode), subnodes)
 
@@ -522,8 +532,7 @@ class ImplementorProvisioner(object):
         full_nsid = self.get_full_nsid(imp)
         log.debug("flipswitch starting full_nsid: {}".format(full_nsid))
 
-        #full_nsid = self.cush._ns.root.nsid + '.implementor.' + full_nsid
-        full_nsid = make_child_nsid(str(self.implementor_ns_root.nsid), full_nsid)
+        full_nsid = sanitize_nsid(make_child_nsid(str(self.nsroots['implementor'].nsid), full_nsid))
         log.debug("final flipswitch full_nsid: {}".format(full_nsid))
 
         ###fs = Flipswitch(full_nsid, self.nsroot)
@@ -626,9 +635,8 @@ class ImplementorProvisioner(object):
 
         log.debug("Searching for implementor fs nsid: {}".format(implementor_nsid))
         try:
-            full_implementor_nsid = make_child_nsid(str(self.implementor_ns_root.nsid), implementor_nsid)
-            #implementor_fs = self.cush._ns.get(f'.flipswitch.implementor.{implementor_nsid}')
-            implementor_fs = self.flipswitch_ns_root.get(f'{full_implementor_nsid}')
+            full_implementor_nsid = make_child_nsid(str(self.nsroots['implementor'].nsid), implementor_nsid)
+            implementor_fs = self.nsroots['flipswitch'].get(f'{full_implementor_nsid}')
 
             log.debug("Exiting")
             return implementor_fs

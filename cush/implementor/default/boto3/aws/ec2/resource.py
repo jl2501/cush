@@ -6,7 +6,7 @@ from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 
 class AwsEc2ResourceProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='boto3.aws.ec2.resource'):
+    def __init__(self, root_nsid='.boto3.aws.ec2.resource'):
         """
         Create the boto3 aws ec2 resource implementors
         """
