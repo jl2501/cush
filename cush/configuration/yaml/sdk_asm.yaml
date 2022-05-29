@@ -2,9 +2,14 @@
 aws:
     ec2:
         instances:
-            __class__: thewired.NamespaceNode
-            __call__ :
-                provider: nsid://.boto3.aws.ec2.instances.get
+            __type__:
+                name: NamespaceNodeCallable
+                bases: ["thewired.NamespaceNodeBase"]
+                dict : {
+                    __call__ :
+                        provider: nsid://.boto3.aws.ec2.instances.get
+                }
+
             new:
               __call__:
                 provider: boto3.aws.ec2.instances.create
