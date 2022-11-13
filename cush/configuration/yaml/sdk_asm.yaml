@@ -2,6 +2,7 @@
 aws:
     ec2:
         instances:
+            #__call__:
             __type__:
                 name: NamespaceNodeCallable
                 bases: ["thewired.NamespaceNodeBase"]

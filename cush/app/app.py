@@ -331,7 +331,7 @@ class CushApplication(NamespaceNodeBase):
         #if node is None:
         #    node = self.sdk
 
-        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.sdk'))
+        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.sdk'), lookup_ns=self._ns)
         dictConfig = load_yaml_file(defaults.sdk_ns_file) 
         parser.parse(dictConfig)
 

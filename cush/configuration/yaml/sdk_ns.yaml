@@ -85,7 +85,5 @@ aws:
     s3:
         buckets:
             __call__:
-                provider: nsid-ref://.provider.boto3.aws.s3.buckets.get
-                #provider: .boto3.aws.s3.buckets.get
-
+                provider: nsid://.provider.boto3.aws.s3.buckets.get
 ...
