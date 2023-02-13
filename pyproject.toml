@@ -12,8 +12,8 @@ colorlog = {path = "../colorlog", develop = true}
 boto3 = "^1.12.42"
 boto = "^2.49.0"
 
-[tool.poetry.dev-dependencies]
-ipython = "^7.13.0"
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.10.0"
 pytest = "^6.1.2"
 
 [build-system]
