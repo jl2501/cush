@@ -6,9 +6,9 @@ authors = ["James Light <j.gareth.light@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-thewired = {path = "../thewired"}
-kaleidoscope = {path = "../kaleidoscope"}
-colorlog = {path = "../colorlog"}
+thewired = {path = "../thewired", develop = true}
+kaleidoscope = {path = "../kaleidoscope", develop = true}
+colorlog = {path = "../colorlog", develop = true}
 boto3 = "^1.12.42"
 boto = "^2.49.0"
 
