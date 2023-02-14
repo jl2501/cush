@@ -2,7 +2,7 @@ version: 1
 
 loggers:
     cush:
-        level: INFO
+        level: DEBUG
         handlers: [CushConsole]
 
     thewired:
