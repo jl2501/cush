@@ -3,7 +3,7 @@ aws:
     ec2:
         instances:
             __call__ :
-                provider: nsid://.boto3.aws.ec2.instances.get
+                provider: nsid-ref://.provider.boto3.aws.ec2.instances.get
     #        new:
     #          __call__:
     #            provider: boto3.aws.ec2.instances.create
@@ -85,5 +85,5 @@ aws:
     s3:
         buckets:
             __call__:
-                provider: nsid://.provider.boto3.aws.s3.buckets.get
+                provider: nsid-ref://.provider.boto3.aws.s3.buckets.get
 ...
