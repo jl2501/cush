@@ -293,7 +293,7 @@ class CushApplication(NamespaceNodeBase):
             log.debug(f"got handle to implementor ns: {init_dictConfig['implementor_namespace']=}")
             mutated_config =  {
                 new_key_name: {
-                    "__class__" : "thewired.DelegateNode",
+                    "__class__" : "thewired.CallableDelegateNode",
                     "__init__" : {
                         "delegate" : {
                             "__class__" : f"thewired.{key}",
