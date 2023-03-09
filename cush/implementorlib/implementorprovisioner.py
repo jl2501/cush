@@ -500,15 +500,13 @@ class ImplementorProvisioner(object):
         """
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_implementor"))
         log.debug(f"called with: {implementor_nsid=}")
-        subnodes = self.cush._ns.get_subnodes(f".implementor.{implementor_nsid}")
-        return filter(lambda x: isinstance(x, DelegateNode), subnodes)
+        return self.cush._ns.get_leaf_nodes(f".implementor.{implementor_nsid}")
 
 
     def lookup_user(self, user_nsid):
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_user"))
         log.debug(f"called with: {user_nsid=}")
-        subnodes = self.cush._ns.get_subnodes(f'.user.{user_nsid}')
-        return filter(lambda x: isinstance(x, CushUser), subnodes)
+        return self.cush._ns.get_leaf_nodes(f".user.{user_nsid}")
 
 
     def make_flipswitch(self, implementor, app_name='default', prefix=None):
