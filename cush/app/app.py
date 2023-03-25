@@ -82,7 +82,7 @@ class CushApplication(NamespaceNodeBase):
         self._ns = namespace
 
         #- initialize the NamespaceNodeBase stuff
-        super().__init__(nsid=make_child_nsid('.application', f'{self.name}'), namespace=self._ns)
+        super().__init__(nsid='.', namespace=self._ns)
 
 
         #- save this instance of CushApplication object to be looked up by name
