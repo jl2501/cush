@@ -141,9 +141,9 @@ class CushApplication(NamespaceNodeBase):
         user_ns_parser.parse(dictConfig)
 
         #- create empty controlling flipswitches for each user / credential object loaded
-        for user in self._ns.get_subnodes('.user'):
-            self._ns.add(f".flipswitch{user.nsid}", Flipswitch)
-        log.debug("Exiting")
+        #for user in self._ns.get_subnodes('.user'):
+        #    self._ns.add(f".flipswitch{user.nsid}", Flipswitch)
+        #log.debug("Exiting")
 
 
     def init_implementor_namespace(self, mock=False, overwrite=True):
@@ -328,10 +328,35 @@ class CushApplication(NamespaceNodeBase):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace'})
         log.debug("Entering")
         log.info('Initializing SDK namespace...')
-        #if node is None:
-        #    node = self.sdk
 
-        parser = NamespaceConfigParser2(namespace=self._ns.get_handle('.sdk'), lookup_ns=self._ns)
+        ###
+        # begin parse callback
+        def make_callable(dictConfig, key):
+            log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace.PARSE_CALLBACK'})
+            log.debug(f"entered: {key=} | {dictConfig=}")
+            mutated_config = {
+                None: {
+                    "__type__" : {
+                        "name" : "CallableNamespaceNode",
+                        "bases": ["NamespaceNodeBase"],
+                        "dict" : {
+                            "__call__" :
+                                dictConfig[key]["provider"]
+                        }
+                    }
+                }
+            }
+            log.debug(f"returning: {mutated_config=}, None")
+            return (mutated_config, None)
+        # end parse callback
+        ###
+
+
+        parser = NamespaceConfigParser2(
+                namespace=self._ns.get_handle('.sdk'),
+                lookup_ns=self._ns,
+                callback_target_keys="__call__",
+                input_mutator_callback=make_callable)
         dictConfig = load_yaml_file(defaults.sdk_ns_file) 
         parser.parse(dictConfig)
 
