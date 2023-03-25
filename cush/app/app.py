@@ -1,7 +1,7 @@
 import copy
 import os
 
-from thewired import NamespaceNode, NamespaceConfigParser2, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import NamespaceConfigParser2, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
 from thewired import DelegateNode
 from thewired.namespace.nsid import make_child_nsid
 
