@@ -13,6 +13,18 @@ def test_init_user():
     cushapp.init_user_namespace()
     assert cushapp.name == 'test2'
 
-def test_init_cush():
+@pytest.fixture(scope="module")
+def default_cush():
     cush.init_cush(step=False)
-    assert cush.get_cush().name == 'default'
+    return cush.get_cush()
+
+def test_init_cush(default_cush):
+    assert default_cush.name == 'default'
+
+def test_provider_implementor_ns_get_root(default_cush):
+    root_node = default_cush._ns.root
+    provider_implementor_ns_root = root_node.provider.boto3.aws.s3.buckets.get._delegate.implementor_ns.get('.')
+    assert str(provider_implementor_ns_root.nsid) == '.'
+    assert str(provider_implementor_ns_root._delegate.nsid == '.implementor')
+    
+
