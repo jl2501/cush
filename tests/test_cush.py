@@ -26,5 +26,3 @@ def test_provider_implementor_ns_get_root(default_cush):
     provider_implementor_ns_root = root_node.provider.boto3.aws.s3.buckets.get._delegate.implementor_ns.get('.')
     assert str(provider_implementor_ns_root.nsid) == '.'
     assert str(provider_implementor_ns_root._delegate.nsid == '.implementor')
-    
-

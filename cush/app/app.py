@@ -2,6 +2,7 @@ import copy
 import os
 
 from thewired import NamespaceConfigParser2, NamespaceLookupError, Namespace, Nsid, NamespaceNodeBase
+from thewired import CallableSecondLifeNode
 from thewired import DelegateNode
 from thewired.namespace.nsid import make_child_nsid
 
@@ -328,22 +329,50 @@ class CushApplication(NamespaceNodeBase):
         log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace'})
         log.debug("Entering")
         log.info('Initializing SDK namespace...')
+        sdk_ns = self._ns.get_handle('.sdk')
 
+        """
+        def call_via_nsid(self, *args, **kwargs):
+            log = LoggerAdapter(logger, dict(name_ext=f'{self.__class__.__name__}.__call__'))
+            log.debug("Entering")
+            callable_node = self._secondlife.get('__call__', self._attribute_lookup_fail_canary)
+            if x == self._attribute_lookup_fail_canary:
+                log.debug("No __call__ key in secondlifedict")
+                return None
+
+            x = callable_node(*args, **args)
+            log.debug("secondlife['__call__']() returned {x}")
+            return x
+        """
         ###
         # begin parse callback
         def make_callable(dictConfig, key):
             log = LoggerAdapter(logger, {'name_ext': 'CushApplication.init_sdk_namespace.PARSE_CALLBACK'})
             log.debug(f"entered: {key=} | {dictConfig=}")
+            """
             mutated_config = {
                 None: {
                     "__type__" : {
-                        "name" : "CallableNamespaceNode",
+                        "name" : "CallableSecondLifeeNode",
                         "bases": ["NamespaceNodeBase"],
                         "dict" : {
                             "__call__" :
-                                dictConfig[key]["provider"]
+                                call_via_nsid
                         }
                     }
+                }
+            }
+            """
+            mutated_config = {
+                None: {
+                    "__class__" : "thewired.CallableSecondLifeNode",
+                    "__init__" : {
+                        "namespace" : sdk_ns,
+                        "secondlife" : {
+                            "__call__" : self._ns.get(dictConfig[key]['provider'])
+                        }
+                    }
+
                 }
             }
             log.debug(f"returning: {mutated_config=}, None")
@@ -353,7 +382,7 @@ class CushApplication(NamespaceNodeBase):
 
 
         parser = NamespaceConfigParser2(
-                namespace=self._ns.get_handle('.sdk'),
+                namespace=sdk_ns,
                 lookup_ns=self._ns,
                 callback_target_keys="__call__",
                 input_mutator_callback=make_callable)
