@@ -8,33 +8,33 @@ aws:
     #          __call__:
     #            provider: boto3.aws.ec2.instances.create
 
-    #    security_groups:
-    #        __call__:
-    #            provider: boto3.aws.ec2.security_groups.get
+        security_groups:
+            __call__:
+              provider: nsid-ref://.provider.boto3.aws.ec2.security_groups.get
 
     #    old_sgs:
     #        __call__:
     #            provider: boto.aws.ec2.security_groups.get
 
-    #    volumes:
-    #        __call__:
-    #            provider: boto3.aws.ec2.volumes.get
-    #    
-    #    snapshots:
-    #        __call__:
-    #            provider: boto3.aws.ec2.snapshots.get
-    #               
-    #     
-    #     
-    #     
-    #    keys:
-    #        __call__:
-    #            provider: boto3.aws.ec2.keypairs.get
+        volumes:
+            __call__:
+              provider: nsid-ref://.provider.boto3.aws.ec2.volumes.get
+        
+        snapshots:
+            __call__:
+              provider: nsid-ref://.provider.boto3.aws.ec2.snapshots.get
+                   
+         
+         
+         
+        keys:
+            __call__:
+              provider: nsid-ref://.provider.boto3.aws.ec2.keypairs.get
 
-    #    enis:
-    #        __call__:
-    #            provider: boto3.aws.ec2.interfaces.get
-    #    
+        enis:
+            __call__:
+              provider: nsid-ref://.provider.boto3.aws.ec2.interfaces.get
+        
         #images:
         #    __call__:
         #        provider:
