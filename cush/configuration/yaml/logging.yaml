@@ -10,7 +10,7 @@ loggers:
         handlers: [TheWiredConsole]
 
     kaleidoscope:
-        level: INFO
+        level: DEBUG
         handlers: [KaleidoscopeConsole]
 
 
