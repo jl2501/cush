@@ -101,7 +101,9 @@ class CushApplication(NamespaceNodeBase):
             cush has a set of expected namespaces that need to all be in place
             for the env to work
 
-            this is where we set all of them up
+            this is where we create the root node for each of them
+            this method ATM mainly serves to document the namespaces in a single 
+            place
 
         Input:
             None
