@@ -16,7 +16,7 @@ class AwsSessionProvisioner(ImplementorProvisioner):
 
 
 
-    def make_implementors(self, credentials='aws', regions='boto.aws.ec2.regions'):
+    def make_implementors(self, credentials='aws', regions='boto3.aws.ec2.regions'):
         log = LoggerAdapter(logger, dict(name_ext='make_implementors'))
         log.info('provisioning boto3 session implementors')
 
