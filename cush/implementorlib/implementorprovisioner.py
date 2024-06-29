@@ -500,15 +500,13 @@ class ImplementorProvisioner(object):
         """
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_implementor"))
         log.debug(f"called with: {implementor_nsid=}")
-        subnodes = self.cush._ns.get_subnodes(f".implementor.{implementor_nsid}")
-        return filter(lambda x: isinstance(x, DelegateNode), subnodes)
+        return self.cush._ns.get_leaf_nodes(f".implementor.{implementor_nsid}")
 
 
     def lookup_user(self, user_nsid):
         log = LoggerAdapter(logger, dict(name_ext=f"{self.__class__.__name__}.lookup_user"))
         log.debug(f"called with: {user_nsid=}")
-        subnodes = self.cush._ns.get_subnodes(f'.user.{user_nsid}')
-        return filter(lambda x: isinstance(x, CushUser), subnodes)
+        return self.cush._ns.get_leaf_nodes(f".user.{user_nsid}")
 
 
     def make_flipswitch(self, implementor, app_name='default', prefix=None):
@@ -523,23 +521,24 @@ class ImplementorProvisioner(object):
         Output:
             a Flipswitch for object
         """
-        log = LoggerAdapter(logger, {'name_ext' :\
-            'ImplementorProvisioner.make_flipswitch'})
-        log.debug("Entering")
+        pass
+        #log = LoggerAdapter(logger, {'name_ext' :\
+        #    'ImplementorProvisioner.make_flipswitch'})
+        #log.debug("Entering")
 
-        imp = implementor
-        #- make nsid
-        full_nsid = self.get_full_nsid(imp)
-        log.debug("flipswitch starting full_nsid: {}".format(full_nsid))
+        #imp = implementor
+        ##- make nsid
+        #full_nsid = self.get_full_nsid(imp)
+        #log.debug("flipswitch starting full_nsid: {}".format(full_nsid))
 
-        full_nsid = sanitize_nsid(make_child_nsid(str(self.nsroots['implementor'].nsid), full_nsid))
-        log.debug("final flipswitch full_nsid: {}".format(full_nsid))
+        #full_nsid = sanitize_nsid(make_child_nsid(str(self.nsroots['implementor'].nsid), full_nsid))
+        #log.debug("final flipswitch full_nsid: {}".format(full_nsid))
 
-        ###fs = Flipswitch(full_nsid, self.nsroot)
+        ####fs = Flipswitch(full_nsid, self.nsroot)
 
-        fs = self.cush._ns.add('.flipswitch' + full_nsid, node_factory=Flipswitch)
-        log.debug("Exiting")
-        return fs
+        #fs = self.cush._ns.add('.flipswitch' + full_nsid, node_factory=Flipswitch)
+        #log.debug("Exiting")
+        #return fs
 
 
     def link_flipswitches(self, parent, children, app_name='default'):
@@ -554,32 +553,33 @@ class ImplementorProvisioner(object):
         Output:
             None; adds the children to the parent
         """
-        log = LoggerAdapter(logger, {'name_ext': 'link_flipswitches'})
-        log.debug("Entering")
-        log.debug("Linking flipswitches: {} ---> {}".format(parent, children))
+        pass
+        #log = LoggerAdapter(logger, {'name_ext': 'link_flipswitches'})
+        #log.debug("Entering")
+        #log.debug("Linking flipswitches: {} ---> {}".format(parent, children))
 
-        if not parent:
-            log.warning("Can't link parent: {}".format(parent))
-            log.debug("Exiting")
-            return
+        #if not parent:
+        #    log.warning("Can't link parent: {}".format(parent))
+        #    log.debug("Exiting")
+        #    return
 
-        if isinstance(children, str) or\
-            not isinstance(children, Iterable):
-            children = [children]
+        #if isinstance(children, str) or\
+        #    not isinstance(children, Iterable):
+        #    children = [children]
 
-        if isinstance(parent, str):
-            #- treat as an existing NSID
-            parent = self.cush._ns.root.flipswitch.get(parent)
+        #if isinstance(parent, str):
+        #    #- treat as an existing NSID
+        #    parent = self.cush._ns.root.flipswitch.get(parent)
 
-        if not isinstance(parent, Iterable):
-            parents = [parent]
-        else:
-            parents = parent
+        #if not isinstance(parent, Iterable):
+        #    parents = [parent]
+        #else:
+        #    parents = parent
 
-        for _parent in parents:
-            _parent.add_children(children)
-        log.debug("Exiting")
-        return
+        #for _parent in parents:
+        #    _parent.add_children(children)
+        #log.debug("Exiting")
+        #return
 
 
     @staticmethod
@@ -626,25 +626,26 @@ class ImplementorProvisioner(object):
             lookup an implementors flipswitch, if it exists
         """
 
-        log = LoggerAdapter(logger, {'name_ext' :\
-            'ImplementorProvisioner.get_flipswitch_from_implementor'})
-        log.debug("Entering: base_nsid: {}".format(base_nsid))
+        pass
+        #log = LoggerAdapter(logger, {'name_ext' :\
+        #    'ImplementorProvisioner.get_flipswitch_from_implementor'})
+        #log.debug("Entering: base_nsid: {}".format(base_nsid))
 
-        Provisioner = self.cush._ns.get(f".implementor_provisioner.{base_nsid}")
-        implementor_nsid = Provisioner.get_full_nsid(implementor)
+        #Provisioner = self.cush._ns.get(f".implementor_provisioner.{base_nsid}")
+        #implementor_nsid = Provisioner.get_full_nsid(implementor)
 
-        log.debug("Searching for implementor fs nsid: {}".format(implementor_nsid))
-        try:
-            full_implementor_nsid = make_child_nsid(str(self.nsroots['implementor'].nsid), implementor_nsid)
-            implementor_fs = self.nsroots['flipswitch'].get(f'{full_implementor_nsid}')
+        #log.debug("Searching for implementor fs nsid: {}".format(implementor_nsid))
+        #try:
+        #    full_implementor_nsid = make_child_nsid(str(self.nsroots['implementor'].nsid), implementor_nsid)
+        #    implementor_fs = self.nsroots['flipswitch'].get(f'{full_implementor_nsid}')
 
-            log.debug("Exiting")
-            return implementor_fs
+        #    log.debug("Exiting")
+        #    return implementor_fs
 
-        except NamespaceLookupError as err:
-            log.warning("Failed to get flipswitch for implementor: {}".format(implementor))
-            log.debug("Exiting")
-            return None
+        #except NamespaceLookupError as err:
+        #    log.warning("Failed to get flipswitch for implementor: {}".format(implementor))
+        #    log.debug("Exiting")
+        #    return None
 
 
     def get_flipswitch_from_user(self, user_root_nsid, user):
@@ -655,14 +656,15 @@ class ImplementorProvisioner(object):
             user_root_nsid: where the user object is rooted in the users namespace
             user: the specific user
         """
-        log = LoggerAdapter(logger, {'name_ext':
-                'ImplementorProvisioner.get_flipswitch_from_user'})
+        pass
+        #log = LoggerAdapter(logger, {'name_ext':
+        #        'ImplementorProvisioner.get_flipswitch_from_user'})
 
-        for leaf in self.cush._ns.get_subnodes('.user'):
-            if leaf == user:
-                user_fs_nsid = leaf.nsid
-                log.debug("using flipswitch nsid: {}".format(user_fs_nsid))
-                return self.cush._ns.get(f".flipswitch{user_fs_nsid}")
+        #for leaf in self.cush._ns.get_subnodes('.user'):
+        #    if leaf == user:
+        #        user_fs_nsid = leaf.nsid
+        #        log.debug("using flipswitch nsid: {}".format(user_fs_nsid))
+        #        return self.cush._ns.get(f".flipswitch{user_fs_nsid}")
 
 
 

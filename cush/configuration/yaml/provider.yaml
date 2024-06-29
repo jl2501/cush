@@ -25,35 +25,35 @@ boto3:
             keypairs:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .key_pairs.all()
                         formatter: list
 
             security_groups:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .security_groups.all()
                         formatter: list
 
             volumes:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .volumes.all(OwnerIds=['self'])
                         formatter: list
 
             snapshots:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .snapshots.filter(OwnerIds=['self'])
                         formatter: list
 
             vpc:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.ec2.resource
+                        implementor: .boto3.aws.ec2.resource
                         addendum: .vpcs.all()
                         formatter: list
 
@@ -61,22 +61,6 @@ boto3:
             buckets:
                 get:
                     AddendumFormatter:
-                        implementor: boto3.aws.s3.resource
+                        implementor: .boto3.aws.s3.resource
                         addendum: .buckets.all()
                         formatter: list
-boto:
-    aws:
-        ec2:
-            elbs:
-                get:
-                    AddendumFormatter:
-                      implementor: boto.aws.ec2.elb.connections
-                      addendum: .get_all_load_balancers()
-                      formatter: None
-            
-            security_groups:
-                get:
-                    AddendumFormatter:
-                        implementor: boto.aws.ec2.connections
-                        addendum: .get_all_security_groups()
-                        formatter: None

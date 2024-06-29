@@ -6,9 +6,12 @@ authors = ["James Light <j.gareth.light@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-thewired = {path = "../thewired", develop = true}
-kaleidoscope = {path = "../kaleidoscope", develop = true}
-colorlog = {path = "../colorlog", develop = true}
+#thewired = {path = "../thewired", develop = true}
+thewired = {git = "https://github.com/jl2501/thewired.git", rev = "master"}
+#kaleidoscope = {path = "../kaleidoscope", develop = true}
+kaleidoscope = {git = "https://github.com/jl2501/kaleidoscope.git", rev = "master"}
+#colorlog = {path = "../colorlog", develop = true}
+colorlog = {git = "https://github.com/jl2501/colorlog.git", rev = "master"}
 boto3 = "^1.12.42"
 boto = "^2.49.0"
 
@@ -17,5 +20,5 @@ ipython = "^8.10.0"
 pytest = "^6.1.2"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry>=1.0.8"]
+build-backend = "poetry.core.masonry.api"
