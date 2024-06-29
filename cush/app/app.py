@@ -46,13 +46,21 @@ class CushApplication(NamespaceNodeBase):
             app = None
         return app
 
-
+    @classmethod
+    def del_application(cls, app_name):
+        log = LoggerAdapter(logger, dict(name_ext='CushApplication.del_application'))
+        try:
+            app = cls._applications.pop(app_name)
+            del app
+        except KeyError:
+            log.debug(f"tried to delete non-existing app by name ({app_name})")
 
     def __new__(cls, name='default', *args, **kwargs):
         log = LoggerAdapter(logger, dict(name_ext='CushApplication.__new__'))
         try:
             app = cls._applications[name]
             log.debug("Found existing application named: {}".format(name))
+            print("Found existing application named: {}".format(name))
 
         except (KeyError, NamespaceLookupError):
             log.debug("Creating new application object named: {}".format(name))
@@ -149,7 +157,7 @@ class CushApplication(NamespaceNodeBase):
         #log.debug("Exiting")
 
 
-    def init_implementor_namespace(self, mock=False, overwrite=True):
+    def init_implementor_namespace(self, overwrite=True):
         """
         Description:
             initialize the implmentor namespace collection
