@@ -175,48 +175,12 @@ class CushApplication(NamespaceNodeBase):
         _implementors = implementorlib.load_implementors(app_name=self.name)
 
         log.debug("Loaded implementors: {}".format(_implementors))
-        self._make_implementors(overwrite=overwrite)
-        log.debug("Exiting")
-        return
-
-
-    #- Note: this doesn't need to be passed a reference to the CushApplication object
-    #-       because it will dynamically get the applicaiton object from the name of
-    #-       the ImplementorProvisioner module, which, by default, is taken from the
-    #-       name of the module as defined by the filesystem layout
-    def _make_implementors(self, overwrite=False):
-        """
-        Description:
-            actually create all the implementor objects
-
-        Input:
-            None directly, but calls ImplementorProvisioner.make_all_implementors(),
-                which relies on collecting the subclasses of ImplementorProvisioner and
-                then instantating them
-
-        Output:
-            None. directly modifies the following cush namespaces:
-                * implementors
-                * implementor_provisioners
-
-        Notes:
-           We have to put an import inside this method, rather than at the top of
-           this module due to a circular dependecy at import time, but not at run-time.
-
-           implementor_provisioner class uses 'get_cush' method, which is defined in this
-           class.
-
-           Thus, we have to instantiate this class before we can import
-           makes_implementors, or else we get a circular import problem :-/
-        """
-        log = LoggerAdapter(logger, {'name_ext' : 'CushApplication._make_implementors'})
-        log.debug("Entering")
-        #- circular dependency at import time; OK at run-time.
         from cush.implementorlib.implementorprovisioner import\
             ImplementorProvisioner
 
         ImplementorProvisioner.make_all_implementors(overwrite=overwrite)
         log.debug("Exiting")
+        return
 
 
 
