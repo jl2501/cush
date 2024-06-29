@@ -71,15 +71,7 @@ class ImplementorProvisioner(object):
             Required user-supplied method that outputs a set of objects to be added to the
             implementor namespace
         """
-        log = LoggerAdapter(logger, {'name_ext' :\
-            'ImplementorProvisioner.make_implementors'})
-
-        log.debug("Entering")
-        log.debug("Input args: {}".format(args))
-        log.debug("Input kwargs: {}".format(kwargs))
-
-        log.debug("Exiting")
-        return
+        pass
 
 
     @abstractmethod
