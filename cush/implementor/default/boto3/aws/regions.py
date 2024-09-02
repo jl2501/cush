@@ -3,8 +3,8 @@ logger = getLogger(__name__)
 from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 class AwsRegionProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='.boto3.aws.ec2.regions', priority=1):
-        super().__init__(root_nsid=root_nsid, priority=priority)
+    def __init__(self, cushApp, root_nsid='.boto3.aws.ec2.regions', priority=1):
+        super().__init__(cushApp, root_nsid=root_nsid, priority=priority)
         #- region string is the nsid extension
         self.add_nsid_ext(lambda x: x)
 

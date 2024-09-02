@@ -5,8 +5,8 @@ from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 
 class AwsS3ClientProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='boto3.aws.s3.client'):
-        super().__init__(root_nsid=root_nsid)
+    def __init__(self, cushApp, root_nsid='boto3.aws.s3.client'):
+        super().__init__(cushApp, root_nsid=root_nsid)
         self.add_nsid_ext('meta.region_name')
         self.add_nsid_ext('_cush_credential_nsid')
 

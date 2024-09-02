@@ -6,11 +6,11 @@ from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 
 class AwsEc2ResourceProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='.boto3.aws.ec2.resource'):
+    def __init__(self, cushApp, root_nsid='.boto3.aws.ec2.resource'):
         """
         Create the boto3 aws ec2 resource implementors
         """
-        super().__init__(root_nsid=root_nsid)
+        super().__init__(cushApp, root_nsid=root_nsid)
         self.add_nsid_ext('meta.client.meta.region_name')
         self.add_nsid_ext('_cush_credential_nsid')
 

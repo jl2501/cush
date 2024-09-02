@@ -4,11 +4,11 @@ logger = getLogger(__name__)
 from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 class AwsSessionProvisioner(ImplementorProvisioner):
-    def __init__(self, root_nsid='.boto3.aws.session', priority=10):
+    def __init__(self, cushApp, root_nsid='.boto3.aws.session', priority=10):
         """
         priority: 10 to wait until after regions have been created
         """
-        super().__init__(root_nsid=root_nsid, priority=priority)
+        super().__init__(cushApp, root_nsid=root_nsid, priority=priority)
         #- use region_name and _cush_credential_nsid for nsid extensions
         self.add_nsid_ext('region_name')
         #- this must be set by us as it does not exist yet
