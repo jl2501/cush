@@ -89,7 +89,7 @@ class ImplementorProvisioner(object):
 
 
     @classmethod
-    def make_all_implementors(cls, cushApp, pkgs=None, overwrite=False, continue_after_failure=False):
+    def make_all_implementors(cls, cushApp, overwrite=False, continue_after_failure=False):
         """
         Description:
             Instantiates the implementor objects. As all Implementors are provisioned /
@@ -120,10 +120,6 @@ class ImplementorProvisioner(object):
         #- each implementor must be a different subclass
         instances = [subclass(cushApp) for subclass in subclasses]
         log.debug("Instantiated: {}".format(instances))
-
-        if pkgs is None:
-            pkgs = cls.all_provisioners.keys()
-            log.debug("pkgs: {}".format(pkgs))
 
         #- make a single iterable, sorted by priority
         all_pkg_provisioners = cls.all_provisioners.values()
