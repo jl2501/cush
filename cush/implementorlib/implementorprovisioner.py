@@ -16,7 +16,6 @@ from thewired import DelegateNode
 from thewired.exceptions import NamespaceLookupError
 from thewired.namespace.nsid import make_child_nsid, sanitize_nsid
 
-from cush import get_cush
 from cush.user import CushUser
 from .flipswitch import Flipswitch
 
