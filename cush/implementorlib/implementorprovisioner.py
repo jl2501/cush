@@ -100,10 +100,16 @@ class ImplementorProvisioner(object):
             TODO: dependency graph
 
         Input:
-            pkgs: optional list of packages to make the implementors for. Defaults to all.
-
+            cushApp: the cushApplication object that gets passed to every implementor instance
+            overwrite: whether or not to try and overwrite existing objects
+            continue_after_failure: 
+                - if true, prints a message, but continues calling `make_implementors` on all 
+                  remaining subclasses
+                - if false, prints the same message and allows triggered exceptions in any 
+                implementor creation process to be raised and stop processing implementor creation
+                                    
         Output:
-            None directly; adds implementors to the implementor Namespace
+            None directly; adds implementors to the implementor Namespace via `call_make_implementors`
         """
 
         log = LoggerAdapter(logger, {'name_ext': 'ImplementorProvisioner.make_implementors'})
@@ -337,10 +343,10 @@ class ImplementorProvisioner(object):
         Description:
             Wrapper around the user/subclass defined make_implementors method to perform
             the namespace modifications needed after the implementors are created.
+            calls user-defined make_implementors() on the user-defined subclasses
 
         Input:
-            None; uses self to call user-defined make_implementors() on the user-defined 
-            ImplementorProvisioner subclass
+            overwrite: whether or not to try and overwrite existing objects in a namespace
 
         Output:
             None; the following cush namespaces are directly modified:
