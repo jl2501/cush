@@ -194,8 +194,6 @@ class ImplementorProvisioner(object):
 
         self.cush = cushApp
 
-        ###
-        # XXX - get rid of this nsroots interface, holder of references
         self.nsroots = dict(
                 root=self.cush._ns.root,
 
