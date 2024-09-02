@@ -92,16 +92,11 @@ class ImplementorProvisioner(object):
     def make_all_implementors(cls, cushApp, overwrite=False, continue_after_failure=False):
         """
         Description:
-            Instantiates the implementor objects. As all Implementors are provisioned /
-            instantiated by ImplementorProvisioner subclasses and Python allows us to
-            dynamically find all subclasses, to create them, we simply get all the
-            subclasses of this class and then call the 'call_make_implementors()' method
-            which wraps the 'make_implementors()' method which must be defined by all
-            subclasses.
+            Instantiates the implementor objects, which are all subclasses of this class
+            1) Instantiates instances of all subclasses
+            2) Orders the implementor provisioners by user set priority parameter
+            3) calls every subclass' `make_implementors` method in specified order
 
-            As some implementors depend on others existing before they are created, this
-            will order the implementor provisioners by user set priority and call them in
-            order
             TODO: dependency graph
 
         Input:
