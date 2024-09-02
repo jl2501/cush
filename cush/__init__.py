@@ -13,17 +13,15 @@ from .app import CushApplication, get_cush
 init_namespaces = ['user', 'implementor', 'default', 'param', 'provider', 'sdk']
 
 #- top level root namespace that contains even the cush application objects
-_rootns = Namespace()
 
 def init_cush(application_name='default', step=True,
-        namespaces=init_namespaces, overwrite=True):
+              namespace=None, namespaces=init_namespaces):
     """
     call this after importing to initialize the cush namespaces
 
     application_name: name of the cush application to initialize
     step: prompt before initializing each section of the application
     namespaces: list of which namespaces to initialize
-    overwrite: whether or not to overwrite existing nodes
     """
     from cush.util import load_yaml_file
     logging.config.dictConfig(load_yaml_file(filename=defaults.logging_config_file))
@@ -31,6 +29,10 @@ def init_cush(application_name='default', step=True,
         x = input("Initializing Bare Application Object: [Enter to continue]")
 
 
+    if namespace is None:
+        _rootns = Namespace()
+    else:
+        _rootns = namespace
     app_nsroot = _rootns.get_handle('.application.default', create_nodes=True)
     _cushapp = CushApplication(namespace=app_nsroot)
 
