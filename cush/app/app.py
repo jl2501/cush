@@ -15,6 +15,7 @@ from cush.namespace import ParamConfigParser
 import cush.implementorlib as implementorlib
 from cush.implementorlib.flipswitch import Flipswitch
 import cush.implementor
+from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
 
 from logging import getLogger, LoggerAdapter
@@ -174,7 +175,6 @@ class CushApplication(NamespaceNodeBase):
         _implementors = implementorlib.load_implementors(app_name=self.name)
 
         log.debug("Loaded implementors: {}".format(_implementors))
-        from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
         ImplementorProvisioner.make_all_implementors(self, overwrite=overwrite)
         log.debug("Exiting")
