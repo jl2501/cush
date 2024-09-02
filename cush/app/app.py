@@ -85,7 +85,6 @@ class CushApplication(NamespaceNodeBase):
             log.debug("skipping initialization: CushApplication object already initialized")
             return
 
-        #- else, we are a new CushApplication instance
         #- so go through all the initialization as normal
         self.name = name
         self._ns = namespace
@@ -175,10 +174,9 @@ class CushApplication(NamespaceNodeBase):
         _implementors = implementorlib.load_implementors(app_name=self.name)
 
         log.debug("Loaded implementors: {}".format(_implementors))
-        from cush.implementorlib.implementorprovisioner import\
-            ImplementorProvisioner
+        from cush.implementorlib.implementorprovisioner import ImplementorProvisioner
 
-        ImplementorProvisioner.make_all_implementors(overwrite=overwrite)
+        ImplementorProvisioner.make_all_implementors(self, overwrite=overwrite)
         log.debug("Exiting")
         return
 

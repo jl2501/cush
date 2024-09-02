@@ -53,9 +53,9 @@ class ImplementorProvisioner(object):
             * gives access to the implementors namespace so that users can refer to
               existing implementors
             * sorts the provisioner subclasses by priority and creates the implementors in
-              the user-specified priority. This makes sure that provisioner methods that
+              the user-specified priority. Simple hack to allow ordering provisioner methods that
               require access to other implementors have the implementors they need already
-              created before they run.
+              created before they run by passing in a priority number.
     """
 
     #- Class Level list keeps track of all subclasses' make_implementors methods
@@ -91,7 +91,7 @@ class ImplementorProvisioner(object):
 
 
     @classmethod
-    def make_all_implementors(cls, pkgs=None, overwrite=False, continue_after_failure=False):
+    def make_all_implementors(cls, cushApp, pkgs=None, overwrite=False, continue_after_failure=False):
         """
         Description:
             Instantiates the implementor objects. As all Implementors are provisioned /
@@ -104,6 +104,7 @@ class ImplementorProvisioner(object):
             As some implementors depend on others existing before they are created, this
             will order the implementor provisioners by user set priority and call them in
             order
+            TODO: dependency graph
 
         Input:
             pkgs: optional list of packages to make the implementors for. Defaults to all.
@@ -116,12 +117,10 @@ class ImplementorProvisioner(object):
         log.debug("Entering")
         subclasses = cls.__subclasses__()
         log.debug("Found subclasses: {}".format(subclasses))
-        instances = list()
 
         #- instantiate all the implementors
-        #- as each implementor is a different subclass, this works
-        for subclass in subclasses:
-            instances.append(subclass())
+        #- each implementor must be a different subclass
+        instances = [subclass(cushApp) for subclass in subclasses]
         log.debug("Instantiated: {}".format(instances))
 
         if pkgs is None:
@@ -171,7 +170,7 @@ class ImplementorProvisioner(object):
 
 
 
-    def __init__(self, root_nsid, priority=math.inf, nsid_exts=None, **kwargs):
+    def __init__(self, cushApp, root_nsid, priority=math.inf, nsid_exts=None, **kwargs):
         """
         Users of this class must call super().__init__(priority) to correctly set the
         priority of their make_implementors method
@@ -195,7 +194,10 @@ class ImplementorProvisioner(object):
         self.app_name = get_implementor_app_name(module)
         log.debug("Using Application name: {}".format(self.app_name))
 
-        self.cush = get_cush(self.app_name)
+        self.cush = cushApp
+
+        ###
+        # XXX - get rid of this nsroots interface, holder of references
         self.nsroots = dict(
                 root=self.cush._ns.root,
 
