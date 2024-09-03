@@ -191,15 +191,6 @@ class ImplementorProvisioner(object):
 
         self.cush = cushApp
 
-        self.nsroots = dict(
-                root=self.cush._ns.root,
-
-                implementor=self.cush._ns.get_handle('.implementor'),
-                implementor_input=self.cush._ns.get_handle('.implementor_input'),
-                implementor_provisioner=self.cush._ns.get_handle('.implementor_provisioner'),
-
-                flipswitch=self.cush._ns.get_handle('.flipswitch'))
-
         root_implementor_pkg = self.get_root_implementor_pkg_name(module)
         log.debug("root implementor module package: {}".format(root_implementor_pkg))
 
@@ -404,7 +395,7 @@ class ImplementorProvisioner(object):
 
         #- TODO: calculate and use NSID postfix
         node_factory = partial(DelegateNode, self)
-        self.nsroots['implementor_provisioner'].add(self.root_nsid, node_factory)
+        self.cush._ns.get_handle('.implementor_provisioner').add(self.root_nsid, node_factory)
         log.debug("Exiting")
         return
 
@@ -451,7 +442,7 @@ class ImplementorProvisioner(object):
             subkey = k
             nsid = '.'.join([self.root_nsid, subkey])
             log.debug(f"adding implementor_input node: {nsid=}")
-            self.nsroots['implementor_input'].add(nsid, DelegateNode, v)
+            self.cush._ns.get_handle('.implementor_input').add(nsid, DelegateNode, v)
             inputs_with_nsids.append((nsid, v))
         log.debug("Exiting")
         return inputs_with_nsids
@@ -475,7 +466,7 @@ class ImplementorProvisioner(object):
             log.debug(f"adding item to implementor ns:  {full_nsid}--->{imp}")
 
             node_factory = partial(DelegateNode, imp)
-            self.nsroots['implementor'].add(full_nsid, node_factory)
+            self.cush._ns.get_handle('.implementor').add(full_nsid, node_factory)
 
         log.debug("Exiting")
 
