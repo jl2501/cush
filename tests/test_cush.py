@@ -30,24 +30,19 @@ def test_reinit_implementor_ns(CushApplication):
     CushApplication.init_implementor_namespace()
     assert CushApplication.name == 'default'
 
-#def test_fixture_cleanup(CushApplication):
-#    CushApplication.init_user_namespace()
-#    CushApplication.init_implementor_namespace()
-#    assert CushApplication.name == 'default'
+def test_init_default_ns(CushApplication):
+    CushApplication.init_default_namespace()
+    assert CushApplication.name == 'default'
 
-#def test_init_default_ns(CushApplication):
-#    CushApplication.init_default_namespace()
-#    assert CushApplication.name == 'default'
-#
-#def test_init_param_ns(CushApplication):
-#    CushApplication.init_param_namespace()
-#    assert CushApplication.name == 'default'
-#
-#def test_init_provider_ns(CushApplication):
-#    CushApplication.init_provider_namespace()
-#    assert CushApplication.name == 'default'
-#
-#def test_init_sdk_ns(CushApplication):
-#    CushApplication.init_provider_namespace()
-#    CushApplication.init_sdk_namespace()
-#    assert CushApplication.name == 'default'
+def test_init_param_ns(CushApplication):
+    CushApplication.init_param_namespace()
+    assert CushApplication.name == 'default'
+
+def test_init_provider_ns(CushApplication):
+    CushApplication.init_provider_namespace()
+    assert CushApplication.name == 'default'
+
+def test_init_sdk_ns(CushApplication):
+    CushApplication.init_provider_namespace()
+    CushApplication.init_sdk_namespace()
+    assert CushApplication.name == 'default'
