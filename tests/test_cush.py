@@ -11,9 +11,6 @@ def test_CushApplication_name(name):
     assert c.name == name
     cush.CushApplication.del_application(name)
 
-#def test_init_cush(CushApplication):
-#    cush.init_cush(step=False)
-
 @pytest.mark.parametrize('CushApplication', ['init_user_test'], indirect=True)
 def test_init_user_ns(CushApplication):
     CushApplication.init_user_namespace()
@@ -46,3 +43,7 @@ def test_init_sdk_ns(CushApplication):
     CushApplication.init_provider_namespace()
     CushApplication.init_sdk_namespace()
     assert CushApplication.name == 'default'
+
+def test_init_cush(CushApplication):
+    cush.init_cush(step=False)
+
