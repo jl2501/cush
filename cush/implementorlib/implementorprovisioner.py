@@ -117,6 +117,9 @@ class ImplementorProvisioner(object):
         subclasses = cls.__subclasses__()
         log.debug("Found subclasses: {}".format(subclasses))
 
+        #- delete all the existing provisioners or else they will be reused
+        cls.all_provisioners.clear()
+
         #- instantiate all the implementors
         #- each implementor must be a different subclass
         instances = [subclass(cushApp) for subclass in subclasses]
