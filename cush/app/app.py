@@ -157,7 +157,7 @@ class CushApplication(NamespaceNodeBase):
         #log.debug("Exiting")
 
 
-    def init_implementor_namespace(self, overwrite=True):
+    def init_implementor_namespace(self, overwrite=False):
         """
         Description:
             initialize the implmentor namespace collection
