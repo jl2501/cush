@@ -117,7 +117,7 @@ class ImplementorProvisioner(object):
         subclasses = cls.__subclasses__()
         log.debug("Found subclasses: {}".format(subclasses))
 
-        #- delete all the existing provisioners or else they will be reused
+        #- delete all the existing provisioners
         cls.all_provisioners.clear()
 
         #- instantiate all the implementors
