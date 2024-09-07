@@ -10,8 +10,6 @@ from cush.util import ProviderClassTable
 import cush.configuration as configuration
 import cush.defaults as defaults
 from cush.util import load_yaml_file
-from cush.namespace import SdkConfigParser, ProviderConfigParser
-from cush.namespace import ParamConfigParser
 import cush.implementorlib as implementorlib
 from cush.implementorlib.flipswitch import Flipswitch
 import cush.implementor
@@ -360,13 +358,6 @@ class CushApplication(NamespaceNodeBase):
                 input_mutator_callback=make_callable)
         dictConfig = load_yaml_file(defaults.sdk_ns_file) 
         parser.parse(dictConfig)
-
-        #sdk_conf_parser = SdkConfigParser(provider_ns = self.provider,\
-        #    nsroot=self.app_nsroot)
-        #sdk_ns_roots = sdk_conf_parser.parse(dictConfig)
-        #for ns in sdk_ns_roots:
-        #    node._add_ns(ns)
-
         log.debug("Exiting")
 
 
