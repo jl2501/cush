@@ -186,7 +186,6 @@ class ImplementorProvisioner(object):
         self.priority = priority
 
         module = inspect.getmodule(self)
-        module_pkg = self.get_root_implementor_pkg_name(module)
         log.debug("module package: {}".format(module.__package__))
 
         self.app_name = get_implementor_app_name(module)
