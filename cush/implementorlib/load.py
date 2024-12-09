@@ -6,7 +6,7 @@ import pkgutil
 import cush.implementor
 import itertools
 
-def get_implementor_path(app_name='default'):
+def get_implementor_path(app_name: str ='default') -> list[str]:
     """
     Description:
         get the path to the implementors top-level package for the application named
@@ -19,11 +19,7 @@ def get_implementor_path(app_name='default'):
         the OS filesystem path to the top-level implementor package for the specified
         application name
     """
-    if app_name == 'default':
-        return cush.implementor.__path__
-    else:
-        msg = "Only default application name for implementors supported ATM"
-        raise ValueError(msg)
+    return [path + f"/{app_name}" for path in cush.implementor.__path__]
 
 
 def load_implementors(path=None, app_name='default', prefix='cush.implementor'):

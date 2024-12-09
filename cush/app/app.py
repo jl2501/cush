@@ -155,7 +155,11 @@ class CushApplication(NamespaceNodeBase):
         #log.debug("Exiting")
 
 
-    def init_implementor_namespace(self, overwrite=False):
+    def init_implementor_namespace(
+            self,
+            overwrite: bool = False,
+            implementors: list[object] | None = None
+    ) -> None:
         """
         Description:
             initialize the implmentor namespace collection
@@ -168,13 +172,15 @@ class CushApplication(NamespaceNodeBase):
         log.debug("Entering")
         log.info("Initializing implementors namespace...")
 
-        #- return value for debugging. The effect of this is to alter the run-time
-        #- namespace by 'import'ing the available modules
-        _implementors = implementorlib.load_implementors(app_name=self.name)
+        if implementors is None:
+            log.debug("Loading all implementors")
+            #- return value for debugging. The effect of this is to alter the run-time
+            #- namespace by 'import'ing the available modules
+            _implementors = implementorlib.load_implementors(app_name=self.name)
+            log.debug("Loaded implementors: {}".format(_implementors))
+            ImplementorProvisioner.make_all_implementors(self, overwrite=overwrite)
 
-        log.debug("Loaded implementors: {}".format(_implementors))
 
-        ImplementorProvisioner.make_all_implementors(self, overwrite=overwrite)
         log.debug("Exiting")
         return
 
