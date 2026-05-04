@@ -1,5 +1,7 @@
 __version__ = "0.0.1"
 
+import functools
+import kaleidoscope
 import logging
 import logging.config
 
@@ -14,6 +16,15 @@ init_namespaces = ['user', 'implementor', 'default', 'param', 'provider', 'sdk']
 
 #- top level root namespace that contains even the cush application objects
 _rootns = Namespace()
+
+def setup_ipython_display_formatter(ip):
+    """replace IPython's builtin plain-text formatter w/ kaleidoscope's rendering"""
+    fallback = ip.display_formatter.formatters["text/plain"]
+    override = functools.partial(kaleidoscope.ipython_display_formatter, fallback)
+    ip.display_formatter.formatters["text/plain"] = override
+
+
+
 
 def init_cush(application_name='default', step=True,
         namespaces=init_namespaces, overwrite=True):
@@ -51,3 +62,13 @@ def init_cush(application_name='default', step=True,
                 name_to_init_method[ns_name]()
         else:
             name_to_init_method[ns_name]()
+
+    try:
+        ip = get_ipython()
+    except NameError:
+        # we are not running inside of IPython
+        pass
+    else:
+        setup_ipython_display_formatter(ip)
+
+
