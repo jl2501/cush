@@ -5,7 +5,7 @@ description = ""
 authors = ["James Light <j.gareth.light@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 #thewired = {path = "../thewired", develop = true}
 thewired = {git = "https://github.com/jl2501/thewired.git", rev = "master"}
 #kaleidoscope = {path = "../kaleidoscope", develop = true}
@@ -16,7 +16,7 @@ boto3 = "^1.12.42"
 boto = "^2.49.0"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^8.10.0"
+ipython = "^9.13.0"
 pytest = "^6.1.2"
 
 [build-system]
