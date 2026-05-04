@@ -8,8 +8,8 @@ authors = ["James Light <j.gareth.light@gmail.com>"]
 python = "^3.11"
 #thewired = {path = "../thewired", develop = true}
 thewired = {git = "https://github.com/jl2501/thewired.git", rev = "master"}
-#kaleidoscope = {path = "../kaleidoscope", develop = true}
-kaleidoscope = {git = "https://github.com/jl2501/kaleidoscope.git", rev = "master"}
+kaleidoscope = {path = "../kaleidoscope", develop = true}
+#kaleidoscope = {git = "https://github.com/jl2501/kaleidoscope.git", rev = "master"}
 #colorlog = {path = "../colorlog", develop = true}
 colorlog = {git = "https://github.com/jl2501/colorlog.git", rev = "master"}
 boto3 = "^1.12.42"
